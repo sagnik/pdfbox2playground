@@ -21,6 +21,7 @@ verboseresults*
 data/*
 src/resources/test/test/*
 logs/
+src/resources/*.png
 
 # sbt specific
 .cache/
