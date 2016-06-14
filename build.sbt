@@ -35,9 +35,9 @@ libraryDependencies ++= Seq(
     )
   )
 
-libraryDependencies += "javax.media" % "jai_core" % "1.1.3"
+//libraryDependencies += "javax.media" % "jai_core" % "1.1.3"
 
-libraryDependencies += "commons-collections" % "commons-collections" % "3.2.1"
+//libraryDependencies += "commons-collections" % "commons-collections" % "3.2.1"
 
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 
