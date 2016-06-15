@@ -279,12 +279,16 @@ public class DrawPrintTextLocations extends PDFTextStripper
     {
         for (TextPosition text : textPositions)
         {
+            if (text.getUnicode().length()>1){
+                System.out.println(text.getUnicode());
+            }
+            /*
             System.out.println("String[" + text.getXDirAdj() + ","
                     + text.getYDirAdj() + " fs=" + text.getFontSize() + " xscale="
                     + text.getXScale() + " height=" + text.getHeightDir() + " space="
                     + text.getWidthOfSpace() + " width="
                     + text.getWidthDirAdj() + "]" + text.getUnicode());
-
+            */
             // in red:
             // show rectangles with the "height" (not a real height, but used for text extraction
             // heuristics, it is 1/2 of the bounding box height and starts at y=0)
@@ -294,7 +298,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
                     text.getWidthDirAdj(),
                     text.getHeightDir());
             g2d.setColor(Color.red);
-            g2d.draw(rect);
+            //g2d.draw(rect);
 
             // in blue:
             // show rectangle with the real vertical bounds, based on the font bounding box y values
@@ -325,7 +329,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
             s = rotateAT.createTransformedShape(s);
 
             g2d.setColor(Color.blue);
-            g2d.draw(s);
+            //g2d.draw(s);
         }
     }
 
