@@ -82,9 +82,10 @@ public class Path implements Iterable<SubPath>
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("{\n  Winding: ")
+        /*builder.append("{\n  Winding: ")
                 .append(windingRule)
                 .append('\n');
+*/
         for (SubPath subPath : subPaths)
             builder.append(subPath);
         builder.append("}\n");
