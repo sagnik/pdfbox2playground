@@ -121,7 +121,76 @@ public class DrawPrintTextLocations extends PDFTextStripper
         }
     }
 
+    private void stripPage(int page) throws IOException
+    {
+        PDFRenderer pdfRenderer = new PDFRenderer(document);
+        image = pdfRenderer.renderImage(page, SCALE);
+
+        PDPage pdPage = document.getPage(page);
+        PDRectangle cropBox = pdPage.getCropBox();
+
+        // flip y-axis
+        flipAT = new AffineTransform();
+        flipAT.translate(0, pdPage.getBBox().getHeight());
+        flipAT.scale(1, -1);
+
+        // page may be rotated
+        rotateAT = new AffineTransform();
+        int rotation = pdPage.getRotation();
+        if (rotation != 0)
+        {
+            PDRectangle mediaBox = pdPage.getMediaBox();
+            switch (rotation)
+            {
+                case 90:
+                    rotateAT.translate(mediaBox.getHeight(), 0);
+                    break;
+                case 270:
+                    rotateAT.translate(0, mediaBox.getWidth());
+                    break;
+                case 180:
+                    rotateAT.translate(mediaBox.getWidth(), mediaBox.getHeight());
+                    break;
+                default:
+                    break;
+            }
+            rotateAT.rotate(Math.toRadians(rotation));
+        }
+
+        g2d = image.createGraphics();
+        g2d.setStroke(new BasicStroke(0.1f));
+        g2d.scale(SCALE, SCALE);
+
+        setStartPage(page + 1);
+        setEndPage(page + 1);
+
+        Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
+        writeText(document, dummy);
+
+        // beads in green
+        g2d.setStroke(new BasicStroke(0.4f));
+        List<PDThreadBead> pageArticles = pdPage.getThreadBeads();
+        for (PDThreadBead bead : pageArticles)
+        {
+            PDRectangle r = bead.getRectangle();
+            GeneralPath p = r.transform(Matrix.getTranslateInstance(-cropBox.getLowerLeftX(), cropBox.getLowerLeftY()));
+
+            Shape s = flipAT.createTransformedShape(p);
+            s = rotateAT.createTransformedShape(s);
+            g2d.setColor(Color.green);
+            g2d.draw(s);
+        }
+
+        g2d.dispose();
+
+        String imageFilename = filename;
+        int pt = imageFilename.lastIndexOf('.');
+        imageFilename = imageFilename.substring(0, pt) + "-marked-" + (page + 1) + ".png";
+        ImageIO.write(image, "png", new File(imageFilename));
+    }
+
     @Override
+
     protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode, Vector displacement) throws IOException
     {
         super.showGlyph(textRenderingMatrix, font, code, unicode, displacement);
@@ -203,73 +272,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
         return at.createTransformedShape(path.getBounds2D());
     }
 
-    private void stripPage(int page) throws IOException
-    {
-        PDFRenderer pdfRenderer = new PDFRenderer(document);
-        image = pdfRenderer.renderImage(page, SCALE);
 
-        PDPage pdPage = document.getPage(page);
-        PDRectangle cropBox = pdPage.getCropBox();
-
-        // flip y-axis
-        flipAT = new AffineTransform();
-        flipAT.translate(0, pdPage.getBBox().getHeight());
-        flipAT.scale(1, -1);
-
-        // page may be rotated
-        rotateAT = new AffineTransform();
-        int rotation = pdPage.getRotation();
-        if (rotation != 0)
-        {
-            PDRectangle mediaBox = pdPage.getMediaBox();
-            switch (rotation)
-            {
-                case 90:
-                    rotateAT.translate(mediaBox.getHeight(), 0);
-                    break;
-                case 270:
-                    rotateAT.translate(0, mediaBox.getWidth());
-                    break;
-                case 180:
-                    rotateAT.translate(mediaBox.getWidth(), mediaBox.getHeight());
-                    break;
-                default:
-                    break;
-            }
-            rotateAT.rotate(Math.toRadians(rotation));
-        }
-
-        g2d = image.createGraphics();
-        g2d.setStroke(new BasicStroke(0.1f));
-        g2d.scale(SCALE, SCALE);
-
-        setStartPage(page + 1);
-        setEndPage(page + 1);
-
-        Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
-        writeText(document, dummy);
-
-        // beads in green
-        g2d.setStroke(new BasicStroke(0.4f));
-        List<PDThreadBead> pageArticles = pdPage.getThreadBeads();
-        for (PDThreadBead bead : pageArticles)
-        {
-            PDRectangle r = bead.getRectangle();
-            GeneralPath p = r.transform(Matrix.getTranslateInstance(-cropBox.getLowerLeftX(), cropBox.getLowerLeftY()));
-
-            Shape s = flipAT.createTransformedShape(p);
-            s = rotateAT.createTransformedShape(s);
-            g2d.setColor(Color.green);
-            g2d.draw(s);
-        }
-
-        g2d.dispose();
-
-        String imageFilename = filename;
-        int pt = imageFilename.lastIndexOf('.');
-        imageFilename = imageFilename.substring(0, pt) + "-marked-" + (page + 1) + ".png";
-        ImageIO.write(image, "png", new File(imageFilename));
-    }
 
     /**
      * Override the default functionality of PDFTextStripper.
@@ -279,26 +282,29 @@ public class DrawPrintTextLocations extends PDFTextStripper
     {
         for (TextPosition text : textPositions)
         {
+            /*
             if (text.getUnicode().length()>1){
                 System.out.println(text.getUnicode());
             }
-            /*
+            */
+
             System.out.println("String[" + text.getXDirAdj() + ","
                     + text.getYDirAdj() + " fs=" + text.getFontSize() + " xscale="
                     + text.getXScale() + " height=" + text.getHeightDir() + " space="
                     + text.getWidthOfSpace() + " width="
                     + text.getWidthDirAdj() + "]" + text.getUnicode());
-            */
+
             // in red:
             // show rectangles with the "height" (not a real height, but used for text extraction
             // heuristics, it is 1/2 of the bounding box height and starts at y=0)
+
             Rectangle2D.Float rect = new Rectangle2D.Float(
                     text.getXDirAdj(),
                     (text.getYDirAdj() - text.getHeightDir()),
                     text.getWidthDirAdj(),
                     text.getHeightDir());
             g2d.setColor(Color.red);
-            //g2d.draw(rect);
+            g2d.draw(rect);
 
             // in blue:
             // show rectangle with the real vertical bounds, based on the font bounding box y values
