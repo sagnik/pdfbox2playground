@@ -14,7 +14,7 @@ object ShowClipPaths {
   def main(args: Array[String]):Unit={
     val loc="src/test/resources/pdf_reference_1-7.pdf"
     val document = PDDocument.load(new File(loc));
-    val page = document.getPage(1);
+    val page = document.getPage(2);
     val finder = new ClipPathFinder(page);
     finder.findClipPaths();
     finder.iterator.asScala.toList.foreach(x=>println(x))
