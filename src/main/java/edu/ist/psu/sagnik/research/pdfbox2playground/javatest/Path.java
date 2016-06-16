@@ -11,8 +11,9 @@ import java.util.List;
  */
 
 
-public class Path implements Iterable<Path.SubPath>
+public class Path implements Iterable<SubPath>
 {
+/*
     public static class Segment
     {
         Segment(Point2D.Float start, Point2D.Float end)
@@ -33,9 +34,13 @@ public class Path implements Iterable<Path.SubPath>
 
         final Point2D.Float start, end;
     }
+*/
 
+/*
     public class SubPath implements Iterable<Segment>
     {
+        */
+/*
         public class Line extends Segment
         {
             Line(Point2D.Float start, Point2D.Float end)
@@ -58,7 +63,11 @@ public class Path implements Iterable<Path.SubPath>
                 return builder.toString();
             }
         }
+        *//*
 
+
+        */
+/*
         public class Curve extends Segment
         {
             Curve(Point2D.Float start, Point2D.Float control1, Point2D.Float control2, Point2D.Float end)
@@ -103,6 +112,8 @@ public class Path implements Iterable<Path.SubPath>
 
             final Point2D control1, control2;
         }
+        *//*
+
 
         SubPath(Point2D.Float start)
         {
@@ -167,8 +178,9 @@ public class Path implements Iterable<Path.SubPath>
 
         boolean closed = false;
         final Point2D.Float start;
-        final List<Segment> segments = new ArrayList<Path.Segment>();
+        final List<Segment> segments = new ArrayList<Segment>();
     }
+*/
 
     public class Rectangle extends SubPath
     {
@@ -238,7 +250,7 @@ public class Path implements Iterable<Path.SubPath>
 
     Point2D.Float getCurrentPoint() throws IOException
     {
-        return currentPoint;
+        return currentSubPath.currentPoint;
     }
 
     void closePath() throws IOException
@@ -280,8 +292,8 @@ public class Path implements Iterable<Path.SubPath>
         return builder.toString();
     }
 
-    Point2D.Float currentPoint = null;
+    //Point2D.Float currentPoint = null;
     SubPath currentSubPath = null;
     int windingRule = -1;
-    final List<SubPath> subPaths = new ArrayList<Path.SubPath>();
+    final List<SubPath> subPaths = new ArrayList<SubPath>();
 }
