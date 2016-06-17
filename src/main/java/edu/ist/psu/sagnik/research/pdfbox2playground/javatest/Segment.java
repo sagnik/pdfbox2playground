@@ -24,6 +24,7 @@ public class Segment
     }
 
     final Point2D.Float start, end;
+
 }
 
 

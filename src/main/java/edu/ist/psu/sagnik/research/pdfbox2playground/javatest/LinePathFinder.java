@@ -44,7 +44,7 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     {
         currentPath.complete(windingRule);
         //paths.add(currentPath);
-        //currentPath = null;
+        currentPath = null;
     }
 
     @Override
@@ -82,6 +82,7 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void endPath() throws IOException
     {
+        //paths.add(currentPath);
         currentPath = null;
     }
 

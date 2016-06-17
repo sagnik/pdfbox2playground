@@ -28,6 +28,12 @@ public class Path implements Iterable<SubPath>
     {
         finishSubPath();
         currentSubPath = new Rectangle(p0, p1, p2, p3);
+        /*
+        currentSubPath.segments.add(new Line(p0,p1));
+        currentSubPath.segments.add(new Line(p1,p2));
+        currentSubPath.segments.add(new Line(p2,p3));
+        currentSubPath.segments.add(new Line(p3,p0));
+        */
         finishSubPath();
     }
 

@@ -9,14 +9,24 @@ import scala.reflect.io.File
   */
 object CreateSVG {
 
-  def svgLineString(s:Segment):String={
+  def svgLineString(s:Segment,w:Float,h:Float):String=
     "<path d=\"M " +
-      s.getStart.x.toString+","+s.getStart.y.toString+
+      (w-s.getStart.x).toString+","+(h-s.getStart.y).toString+
       " L " +
-      s.getEnd.x.toString+","+s.getEnd.y.toString +
+      (w-s.getEnd.x).toString+","+(h-s.getEnd.y).toString +
       "\" style=\"fill:none;stroke:#000000;stroke-width:0.39300001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;\" " +
       " xmlns=\"http://www.w3.org/2000/svg\" xmlns:svg=\"http://www.w3.org/2000/svg\"/>"
-  }
+
+  def svgLineString(s:Segment,w:Float,h:Float,curveAware:Boolean):String=
+    if (s.isInstanceOf[edu.ist.psu.sagnik.research.pdfbox2playground.javatest.Line])
+      "<path d=\"M " +
+        (w-s.getStart.x).toString+","+(h-s.getStart.y).toString+
+        " L " +
+        (w-s.getEnd.x).toString+","+(h-s.getEnd.y).toString +
+        "\" style=\"fill:none;stroke:#000000;stroke-width:0.39300001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;\" " +
+        " xmlns=\"http://www.w3.org/2000/svg\" xmlns:svg=\"http://www.w3.org/2000/svg\"/>"
+    else
+      ""
 
   def apply(segments:List[Segment],svgLoc:String,width:Float,height:Float):Unit={
     val svgStart="<?xml version=\"1.0\" standalone=\"no\"?>\n\n<svg height=\"" +
@@ -26,7 +36,7 @@ object CreateSVG {
       "\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\">"+
       "\n"
 
-    val svgString= segments.map(x=>svgLineString(x)).foldLeft("")((a,b)=>a+"\n"+b)+
+    val svgString= segments.map(x=>svgLineString(x,width,height)).foldLeft("")((a,b)=>a+"\n"+b)+
       "\n"
 
     val svgEnd="\n</svg>"
