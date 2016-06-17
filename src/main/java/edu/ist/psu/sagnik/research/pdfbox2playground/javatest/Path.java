@@ -67,6 +67,10 @@ public class Path implements Iterable<SubPath>
         }
     }
 
+    public List<SubPath> getSubPaths()
+    {
+        return subPaths;
+    }
     //
     // Iterable<Path.SubPath> implementation
     //
@@ -88,12 +92,12 @@ public class Path implements Iterable<SubPath>
 */
         for (SubPath subPath : subPaths)
             builder.append(subPath);
-        builder.append("}\n");
+        //builder.append("}\n");
         return builder.toString();
     }
 
     //Point2D.Float currentPoint = null;
     SubPath currentSubPath = null;
     int windingRule = -1;
-    final List<SubPath> subPaths = new ArrayList<SubPath>();
+    final List<SubPath> subPaths = new ArrayList<>();
 }
