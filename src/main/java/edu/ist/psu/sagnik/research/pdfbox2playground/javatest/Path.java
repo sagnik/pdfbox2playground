@@ -20,6 +20,7 @@ public class Path implements Iterable<SubPath>
 
     void complete(int windingRule)
     {
+        System.out.println("Came from clip");
         finishSubPath();
         this.windingRule = windingRule;
     }
@@ -27,13 +28,8 @@ public class Path implements Iterable<SubPath>
     void appendRectangle(Point2D.Float p0, Point2D.Float p1, Point2D.Float p2, Point2D.Float p3) throws IOException
     {
         finishSubPath();
+        //System.out.println("Adding rectangle");
         currentSubPath = new Rectangle(p0, p1, p2, p3);
-        /*
-        currentSubPath.segments.add(new Line(p0,p1));
-        currentSubPath.segments.add(new Line(p1,p2));
-        currentSubPath.segments.add(new Line(p2,p3));
-        currentSubPath.segments.add(new Line(p3,p0));
-        */
         finishSubPath();
     }
 
@@ -92,13 +88,13 @@ public class Path implements Iterable<SubPath>
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        /*builder.append("{\n  Winding: ")
+        builder.append("{\n  Winding: ")
                 .append(windingRule)
                 .append('\n');
-*/
+        System.out.println("printing path");
         for (SubPath subPath : subPaths)
             builder.append(subPath);
-        //builder.append("}\n");
+        builder.append("}\n");
         return builder.toString();
     }
 
