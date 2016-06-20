@@ -1,16 +1,11 @@
 package edu.ist.psu.sagnik.research.pdfbox2playground.javatest;
 
-import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.contentstream.operator.Operator;
-import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.PDStream;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,12 +19,22 @@ public class ParsePDTokens {
         PDFStreamParser parser = new PDFStreamParser(page);
         parser.parse();
         List<Object> tokens = parser.getTokens();
+        int lines=0;
+        int curves=0;
         for (Object token:tokens){
             if (token instanceof Operator) {
                 Operator op=(Operator) token;
-                System.out.println(op.toString());
+                if ("l".equals(op.getName()))
+                    lines+=1;
+                else if ("c".equals(op.getName())||"y".equals(op.getName()) ||"v".equals(op.getName())){
+                    System.out.println(op);
+                    curves+=1;
+                }
+
+
             }
         }
+        System.out.println(lines+","+curves);
 
     }
 
