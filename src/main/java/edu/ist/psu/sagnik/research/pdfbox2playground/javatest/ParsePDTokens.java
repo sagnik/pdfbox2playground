@@ -21,20 +21,26 @@ public class ParsePDTokens {
         List<Object> tokens = parser.getTokens();
         int lines=0;
         int curves=0;
+        int rectangles=0;
+        int doOps=0;
         for (Object token:tokens){
             if (token instanceof Operator) {
                 Operator op=(Operator) token;
-                if ("l".equals(op.getName()))
+                if ("do".equals(op.getName()))
+                    doOps+=1;
+                if ("l".equals(op.getName()) || "h".equals(op.getName()))
                     lines+=1;
                 else if ("c".equals(op.getName())||"y".equals(op.getName()) ||"v".equals(op.getName())){
                     System.out.println(op);
                     curves+=1;
                 }
+                else if ("re".equals(op.getName()))
+                    rectangles+=1;
 
 
             }
         }
-        System.out.println(lines+","+curves);
+        System.out.println(lines+","+curves+","+rectangles+","+doOps);
 
     }
 

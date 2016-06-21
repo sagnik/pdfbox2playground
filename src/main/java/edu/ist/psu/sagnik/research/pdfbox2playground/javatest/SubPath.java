@@ -40,7 +40,7 @@ public class SubPath implements Iterable<Segment>
     void closePath()
     {
         closed = true;
-        //segments.add(new Line(currentPoint,start));
+        segments.add(new Line(currentPoint,start));
         currentPoint = start;
     }
 

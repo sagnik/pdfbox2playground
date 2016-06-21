@@ -42,6 +42,27 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void clip(int windingRule) throws IOException
     {
+
+        int rectangle=0;
+        int line=0;
+        int curve=0;
+        for (SubPath sp:currentPath.subPaths){
+            if (sp instanceof Rectangle)
+                rectangle+=1;
+            else {
+                for (Segment s : sp.segments) {
+                    if (s instanceof Line) {
+                        Line ls= (Line)s;
+                        System.out.println(ls.getStart()+","+ls.getEnd());
+                        line += 1;
+                    }
+                    else if (s instanceof Curve)
+                        curve+=1;
+                }
+            }
+        }
+        //System.out.println("in clip path, rectangle: "+rectangle+" lines "+line+" curves "+curve);
+
         currentPath.complete(windingRule);
         paths.add(currentPath);
         currentPath = null;

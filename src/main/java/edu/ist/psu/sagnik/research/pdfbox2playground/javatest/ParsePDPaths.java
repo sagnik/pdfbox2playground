@@ -21,21 +21,25 @@ public class ParsePDPaths {
         finder.findLinePaths();
         int linePaths=0;
         int curvePaths=0;
+        int rectangles=0;
         for (Path p:finder.paths){
             for (SubPath sp: p.subPaths){
-                for (Segment s: sp.segments){
-                    //System.out.println("processing segment: ");
-                    if (s instanceof Line){
-                        linePaths+=1;
-                    }
-                    else if (s instanceof Curve){
-                        curvePaths+=1;
+                if (sp instanceof Rectangle)
+                    rectangles+=1;
+                else {
+                    for (Segment s : sp.segments) {
+                        //System.out.println("processing segment: ");
+                        if (s instanceof Line) {
+                            linePaths += 1;
+                        } else if (s instanceof Curve) {
+                            curvePaths += 1;
+                        }
                     }
                 }
 
             }
         }
-        System.out.println(linePaths+" "+curvePaths);
+        System.out.println(linePaths+" "+curvePaths+" "+rectangles);
 
     }
 }
