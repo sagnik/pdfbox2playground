@@ -5,8 +5,6 @@ import org.apache.pdfbox.pdmodel.PDPage;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by schoudhury on 6/20/16.
@@ -26,19 +24,22 @@ public class ParsePDPaths {
             for (SubPath sp: p.subPaths){
                 if (sp instanceof Rectangle)
                     rectangles+=1;
-                else {
+                //else {
                     for (Segment s : sp.segments) {
-                        //System.out.println("processing segment: ");
                         if (s instanceof Line) {
                             linePaths += 1;
+                            Line l=(Line) s;
+                            System.out.println("Got a line, "+l.toString());
                         } else if (s instanceof Curve) {
                             curvePaths += 1;
+                            Curve c=(Curve)s;
+                            //System.out.println("Got a curve, "+c.toString());
                         }
                         else {
                             System.out.println(s.getClass());
                         }
                     }
-                }
+                //}
 
             }
         }

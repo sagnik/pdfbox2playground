@@ -42,6 +42,7 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void clip(int windingRule) throws IOException
     {
+/*
 
         int rectangle=0;
         int line=0;
@@ -61,7 +62,8 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
                 }
             }
         }
-        System.out.println("in clip path, rectangle: "+rectangle+" lines "+line+" curves "+curve);
+        //System.out.println("in clip path, rectangle: "+rectangle+" lines "+line+" curves "+curve);
+*/
 
         currentPath.complete(windingRule);
         paths.add(currentPath);
@@ -103,6 +105,8 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void endPath() throws IOException
     {
+        //paths.add(currentPath); //this has no effect because `n` always follows `W`
+        // or `W*`. We are setting currentPath to null in those cases anyway.
         currentPath = null;
     }
 

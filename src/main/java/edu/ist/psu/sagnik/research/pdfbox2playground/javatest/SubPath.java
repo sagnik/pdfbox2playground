@@ -25,6 +25,7 @@ public class SubPath implements Iterable<Segment>
     {
         Point2D.Float end = new Point2D.Float(x, y);
         segments.add(new Line(currentPoint, end));
+        //System.out.println("Got a line, "+new Line(currentPoint, end));
         currentPoint = end;
     }
 
@@ -34,6 +35,7 @@ public class SubPath implements Iterable<Segment>
         Point2D.Float control2 = new Point2D.Float(x2, y2);
         Point2D.Float end = new Point2D.Float(x3, y3);
         segments.add(new Curve(currentPoint, control1, control2, end));
+        //System.out.println("Got a curve, "+new Curve(currentPoint, control1, control2, end));
         currentPoint = end;
     }
 

@@ -31,7 +31,11 @@ public class Curve extends Segment
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("    Curve to: ")
+        builder.append("    Curve from: ")
+                .append(start.getX())
+                .append(", ")
+                .append(start.getY())
+                .append("    to: ")
                 .append(end.getX())
                 .append(", ")
                 .append(end.getY())
@@ -42,8 +46,8 @@ public class Curve extends Segment
                 .append(" and Control2: ")
                 .append(control2.getX())
                 .append(", ")
-                .append(control2.getY())
-                .append('\n');
+                .append(control2.getY());
+//                .append('\n');
         return builder.toString();
     }
 

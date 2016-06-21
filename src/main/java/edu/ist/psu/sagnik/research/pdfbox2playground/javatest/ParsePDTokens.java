@@ -24,10 +24,13 @@ public class ParsePDTokens {
         int rectangles=0;
         int doOps=0;
         int clipPaths=0;
+        int noOps=0;
         for (Object token:tokens){
             if (token instanceof Operator) {
                 Operator op=(Operator) token;
-                if ("do".equals(op.getName()))
+                if ("n".equals(op.getName()))
+                    noOps+=1;
+                else if ("do".equals(op.getName()))
                     doOps+=1;
                 else if ("W".equals(op.getName())|| "W*".equals(op.getName()))
                     clipPaths+=1;
@@ -40,10 +43,9 @@ public class ParsePDTokens {
                 else if ("re".equals(op.getName()))
                     rectangles+=1;
 
-
             }
         }
-        System.out.println(lines+","+curves+","+rectangles+","+doOps+","+clipPaths);
+        System.out.println(lines+","+curves+","+rectangles+","+doOps+","+clipPaths+","+noOps);
 
     }
 

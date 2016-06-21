@@ -16,11 +16,16 @@ public class Line extends Segment {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("    Line to: ")
+        builder.append("    Line from: ")
+                .append(start.getX())
+                .append(", ")
+                .append(start.getY())
+                .append("   to: ")
                 .append(end.getX())
                 .append(", ")
-                .append(end.getY())
-                .append('\n');
+                .append(end.getY());
+//                .append('\n');
+
         return builder.toString();
     }
 }

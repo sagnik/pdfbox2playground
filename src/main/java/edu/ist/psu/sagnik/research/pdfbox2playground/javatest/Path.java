@@ -20,7 +20,6 @@ public class Path implements Iterable<SubPath>
 
     void complete(int windingRule)
     {
-        //System.out.println("Came from clip, "+subPaths.size());
         finishSubPath();
         this.windingRule = windingRule;
     }
@@ -28,7 +27,6 @@ public class Path implements Iterable<SubPath>
     void appendRectangle(Point2D.Float p0, Point2D.Float p1, Point2D.Float p2, Point2D.Float p3) throws IOException
     {
         finishSubPath();
-        //System.out.println("Adding rectangle");
         currentSubPath = new Rectangle(p0, p1, p2, p3);
         finishSubPath();
     }
