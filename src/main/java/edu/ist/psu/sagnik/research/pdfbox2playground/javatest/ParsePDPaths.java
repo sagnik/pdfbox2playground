@@ -14,9 +14,9 @@ import java.util.List;
 public class ParsePDPaths {
 
     public static void main(String[] args) throws IOException{
-        String loc="src/test/resources/test.pdf";
+        String loc="src/test/resources/pg_0005.pdf";
         PDDocument document = PDDocument.load(new File(loc));
-        PDPage page = document.getPage(4);
+        PDPage page = document.getPage(0);
         LinePathFinder finder = new LinePathFinder(page);
         finder.findLinePaths();
         int linePaths=0;
@@ -33,6 +33,9 @@ public class ParsePDPaths {
                             linePaths += 1;
                         } else if (s instanceof Curve) {
                             curvePaths += 1;
+                        }
+                        else {
+                            System.out.println(s.getClass());
                         }
                     }
                 }

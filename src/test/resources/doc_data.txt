@@ -1,0 +1,56 @@
+InfoBegin
+InfoKey: ModDate
+InfoValue: D:20061029012149
+InfoBegin
+InfoKey: CreationDate
+InfoValue: D:20061029012149
+InfoBegin
+InfoKey: Title
+InfoValue: v0_existNIPS.dvi
+InfoBegin
+InfoKey: Creator
+InfoValue: dvips(k) 5.92b Copyright 2002 Radical Eye Software
+InfoBegin
+InfoKey: Producer
+InfoValue: GPL Ghostscript 8.01
+NumberOfPages: 8
+PageMediaBegin
+PageMediaNumber: 1
+PageMediaRotation: 0
+PageMediaRect: 0 0 595 842
+PageMediaDimensions: 595 842
+PageMediaBegin
+PageMediaNumber: 2
+PageMediaRotation: 0
+PageMediaRect: 0 0 595 842
+PageMediaDimensions: 595 842
+PageMediaBegin
+PageMediaNumber: 3
+PageMediaRotation: 0
+PageMediaRect: 0 0 595 842
+PageMediaDimensions: 595 842
+PageMediaBegin
+PageMediaNumber: 4
+PageMediaRotation: 0
+PageMediaRect: 0 0 595 842
+PageMediaDimensions: 595 842
+PageMediaBegin
+PageMediaNumber: 5
+PageMediaRotation: 0
+PageMediaRect: 0 0 595 842
+PageMediaDimensions: 595 842
+PageMediaBegin
+PageMediaNumber: 6
+PageMediaRotation: 0
+PageMediaRect: 0 0 595 842
+PageMediaDimensions: 595 842
+PageMediaBegin
+PageMediaNumber: 7
+PageMediaRotation: 0
+PageMediaRect: 0 0 595 842
+PageMediaDimensions: 595 842
+PageMediaBegin
+PageMediaNumber: 8
+PageMediaRotation: 0
+PageMediaRect: 0 0 595 842
+PageMediaDimensions: 595 842

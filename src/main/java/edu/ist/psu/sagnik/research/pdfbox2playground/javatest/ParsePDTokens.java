@@ -23,12 +23,15 @@ public class ParsePDTokens {
         int curves=0;
         int rectangles=0;
         int doOps=0;
+        int clipPaths=0;
         for (Object token:tokens){
             if (token instanceof Operator) {
                 Operator op=(Operator) token;
                 if ("do".equals(op.getName()))
                     doOps+=1;
-                if ("l".equals(op.getName()) || "h".equals(op.getName()))
+                else if ("W".equals(op.getName())|| "W*".equals(op.getName()))
+                    clipPaths+=1;
+                else if ("l".equals(op.getName()) || "h".equals(op.getName()))
                     lines+=1;
                 else if ("c".equals(op.getName())||"y".equals(op.getName()) ||"v".equals(op.getName())){
                     System.out.println(op);
@@ -40,15 +43,15 @@ public class ParsePDTokens {
 
             }
         }
-        System.out.println(lines+","+curves+","+rectangles+","+doOps);
+        System.out.println(lines+","+curves+","+rectangles+","+doOps+","+clipPaths);
 
     }
 
 
 
     public static void main(String[] args) throws Exception{
-        String loc="src/test/resources/test.pdf";
-        printContent(loc,4);
+        String loc="src/test/resources/pg_0005.pdf";
+        printContent(loc,0);
     }
 
 

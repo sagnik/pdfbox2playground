@@ -53,7 +53,7 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
                 for (Segment s : sp.segments) {
                     if (s instanceof Line) {
                         Line ls= (Line)s;
-                        System.out.println(ls.getStart()+","+ls.getEnd());
+                        //System.out.println(ls.getStart()+","+ls.getEnd());
                         line += 1;
                     }
                     else if (s instanceof Curve)
@@ -61,7 +61,7 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
                 }
             }
         }
-        //System.out.println("in clip path, rectangle: "+rectangle+" lines "+line+" curves "+curve);
+        System.out.println("in clip path, rectangle: "+rectangle+" lines "+line+" curves "+curve);
 
         currentPath.complete(windingRule);
         paths.add(currentPath);

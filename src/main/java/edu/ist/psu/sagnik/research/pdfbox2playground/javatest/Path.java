@@ -20,7 +20,7 @@ public class Path implements Iterable<SubPath>
 
     void complete(int windingRule)
     {
-        System.out.println("Came from clip, "+subPaths.size());
+        //System.out.println("Came from clip, "+subPaths.size());
         finishSubPath();
         this.windingRule = windingRule;
     }
