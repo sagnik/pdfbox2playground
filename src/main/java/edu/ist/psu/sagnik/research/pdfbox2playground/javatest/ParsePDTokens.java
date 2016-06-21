@@ -25,16 +25,19 @@ public class ParsePDTokens {
         int doOps=0;
         int clipPaths=0;
         int noOps=0;
+        int closeLines=0;
         for (Object token:tokens){
             if (token instanceof Operator) {
                 Operator op=(Operator) token;
-                if ("n".equals(op.getName()))
+                if ("h".equals(op.getName()))
+                    closeLines+=1;
+                else if ("n".equals(op.getName()))
                     noOps+=1;
                 else if ("do".equals(op.getName()))
                     doOps+=1;
                 else if ("W".equals(op.getName())|| "W*".equals(op.getName()))
                     clipPaths+=1;
-                else if ("l".equals(op.getName()) || "h".equals(op.getName()))
+                else if ("l".equals(op.getName()))
                     lines+=1;
                 else if ("c".equals(op.getName())||"y".equals(op.getName()) ||"v".equals(op.getName())){
                     System.out.println(op);
@@ -45,15 +48,18 @@ public class ParsePDTokens {
 
             }
         }
-        System.out.println(lines+","+curves+","+rectangles+","+doOps+","+clipPaths+","+noOps);
+        System.out.println(
+                "lines: "+lines+", closeLines: "+closeLines+", curves: "+
+                curves+", rectangles: "+rectangles+", doops: "+doOps+
+                        ", clipPaths: "+clipPaths+", noOps: "+noOps);
 
     }
 
 
 
     public static void main(String[] args) throws Exception{
-        String loc="src/test/resources/pg_0005.pdf";
-        printContent(loc,0);
+        String loc=new DataLocation().pdLoc;
+        printContent(loc,new DataLocation().pdPageNumber);
     }
 
 

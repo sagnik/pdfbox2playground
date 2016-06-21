@@ -23,8 +23,8 @@ public class Line extends Segment {
                 .append("   to: ")
                 .append(end.getX())
                 .append(", ")
-                .append(end.getY());
-//                .append('\n');
+                .append(end.getY())
+                .append('\n');
 
         return builder.toString();
     }

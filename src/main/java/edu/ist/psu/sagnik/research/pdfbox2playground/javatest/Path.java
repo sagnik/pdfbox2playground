@@ -20,6 +20,8 @@ public class Path implements Iterable<SubPath>
 
     void complete(int windingRule)
     {
+        //for (Segment s: currentSubPath.segments)
+        //System.out.println("current sub path is null: "+(currentSubPath==null));
         finishSubPath();
         this.windingRule = windingRule;
     }
@@ -44,7 +46,7 @@ public class Path implements Iterable<SubPath>
 
     void curveTo(float x1, float y1, float x2, float y2, float x3, float y3) throws IOException
     {
-        currentSubPath.curveTo(x1, y1, x2, y2, x3, y3);
+        currentSubPath.curveTo(x1, y1, x2, y2, x3, y3, currentSubPath);
     }
 
     Point2D.Float getCurrentPoint() throws IOException

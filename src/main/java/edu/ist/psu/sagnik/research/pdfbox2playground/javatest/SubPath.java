@@ -29,6 +29,16 @@ public class SubPath implements Iterable<Segment>
         currentPoint = end;
     }
 
+    void curveTo(float x1, float y1, float x2, float y2, float x3, float y3, SubPath cS)
+    {
+        Point2D.Float control1 = new Point2D.Float(x1, y1);
+        Point2D.Float control2 = new Point2D.Float(x2, y2);
+        Point2D.Float end = new Point2D.Float(x3, y3);
+        segments.add(new Curve(currentPoint, control1, control2, end));
+        //System.out.println(new Curve(currentPoint, control1, control2, end)+", at subpath "+ cS.hashCode());
+        currentPoint = end;
+    }
+
     void curveTo(float x1, float y1, float x2, float y2, float x3, float y3)
     {
         Point2D.Float control1 = new Point2D.Float(x1, y1);

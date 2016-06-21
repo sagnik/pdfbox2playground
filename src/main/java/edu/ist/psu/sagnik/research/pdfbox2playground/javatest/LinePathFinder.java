@@ -65,8 +65,9 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
         }
         //System.out.println("in clip path, rectangle: "+rectangle+" lines "+line+" curves "+curve);
 */
-
+        //System.out.println("before clip current path contains: "+currentPath.subPaths.size());
         currentPath.complete(windingRule);
+        //System.out.println("after clip current path contains: "+currentPath.subPaths.size());
         paths.add(currentPath);
         currentPath = null;
     }
@@ -114,6 +115,7 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void strokePath() throws IOException
     {
+        currentPath.complete(-2);
         paths.add(currentPath);
         currentPath = null;
     }
@@ -121,6 +123,7 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void fillPath(int windingRule) throws IOException
     {
+        currentPath.complete(-2);
         paths.add(currentPath);
         currentPath = null;
     }
@@ -128,6 +131,7 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void fillAndStrokePath(int windingRule) throws IOException
     {
+        currentPath.complete(-2);
         paths.add(currentPath);
         currentPath = null;
     }
@@ -135,6 +139,7 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void shadingFill(COSName shadingName) throws IOException
     {
+        currentPath.complete(-2);
         paths.add(currentPath);
         currentPath = null;
     }

@@ -12,11 +12,19 @@ import java.io.IOException;
 public class ParsePDPaths {
 
     public static void main(String[] args) throws IOException{
-        String loc="src/test/resources/pg_0005.pdf";
+        String loc= new DataLocation().pdLoc;
         PDDocument document = PDDocument.load(new File(loc));
-        PDPage page = document.getPage(0);
+        PDPage page = document.getPage(new DataLocation().pdPageNumber);
         LinePathFinder finder = new LinePathFinder(page);
         finder.findLinePaths();
+
+//        ClipPathFinder finder = new ClipPathFinder(page);
+//        finder.findClipPaths();
+
+//        for (Path p: finder.paths){
+//            System.out.println(p);
+//        }
+
         int linePaths=0;
         int curvePaths=0;
         int rectangles=0;
@@ -24,22 +32,22 @@ public class ParsePDPaths {
             for (SubPath sp: p.subPaths){
                 if (sp instanceof Rectangle)
                     rectangles+=1;
-                //else {
+                else {
                     for (Segment s : sp.segments) {
                         if (s instanceof Line) {
                             linePaths += 1;
                             Line l=(Line) s;
-                            System.out.println("Got a line, "+l.toString());
+                            //System.out.println("Got a line, "+l.toString());
                         } else if (s instanceof Curve) {
                             curvePaths += 1;
                             Curve c=(Curve)s;
-                            //System.out.println("Got a curve, "+c.toString());
+                            System.out.println(c.toString());
                         }
                         else {
                             System.out.println(s.getClass());
                         }
                     }
-                //}
+                }
 
             }
         }
