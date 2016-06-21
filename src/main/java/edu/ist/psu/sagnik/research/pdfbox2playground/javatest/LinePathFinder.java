@@ -32,6 +32,7 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void appendRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3) throws IOException
     {
+        //System.out.println("will call rect now");
         startPathIfNecessary();
         currentPath.appendRectangle(toFloat(p0), toFloat(p1), toFloat(p2), toFloat(p3));
     }
@@ -80,8 +81,8 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void lineTo(float x, float y) throws IOException
     {
+        //System.out.println("will call line now");
         currentPath.lineTo(x, y);
-        //currentPath = null;
     }
 
     @Override

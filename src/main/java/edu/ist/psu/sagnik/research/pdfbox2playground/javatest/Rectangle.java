@@ -14,6 +14,7 @@ public class Rectangle extends SubPath
         lineTo((float)p2.getX(), (float)p2.getY());
         lineTo((float)p3.getX(), (float)p3.getY());
         closePath();
+        //lineTo((float)p1.getX(), (float)p1.getY());
     }
 
     //

@@ -43,6 +43,7 @@ public class SubPath implements Iterable<Segment>
     {
         closed = true;
         segments.add(new Line(currentPoint,start));
+        //System.out.println("Got a line, "+new Line(currentPoint, start));
         currentPoint = start;
     }
 
