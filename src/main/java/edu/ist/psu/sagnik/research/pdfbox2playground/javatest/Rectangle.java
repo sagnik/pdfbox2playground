@@ -1,5 +1,7 @@
 package edu.ist.psu.sagnik.research.pdfbox2playground.javatest;
 
+import org.apache.pdfbox.util.Matrix;
+
 import java.awt.geom.Point2D;
 
 /**
@@ -7,13 +9,13 @@ import java.awt.geom.Point2D;
  */
 public class Rectangle extends SubPath
 {
-    Rectangle(Point2D.Float p0, Point2D.Float p1, Point2D.Float p2, Point2D.Float p3)
+    Rectangle(Point2D.Float p0, Point2D.Float p1, Point2D.Float p2, Point2D.Float p3, Matrix ctm)
     {
         super(p0);
-        lineTo((float)p1.getX(), (float)p1.getY());
-        lineTo((float)p2.getX(), (float)p2.getY());
-        lineTo((float)p3.getX(), (float)p3.getY());
-        closePath();
+        lineTo((float)p1.getX(), (float)p1.getY(),ctm);
+        lineTo((float)p2.getX(), (float)p2.getY(),ctm);
+        lineTo((float)p3.getX(), (float)p3.getY(),ctm);
+        closePath(ctm);
         //lineTo((float)p1.getX(), (float)p1.getY());
     }
 

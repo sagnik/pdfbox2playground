@@ -1,13 +1,15 @@
 package edu.ist.psu.sagnik.research.pdfbox2playground.javatest;
 
+import org.apache.pdfbox.util.Matrix;
+
 import java.awt.geom.Point2D;
 
 /**
  * Created by schoudhury on 6/16/16.
  */
 public class Line extends Segment {
-    Line(Point2D.Float start, Point2D.Float end) {
-        super(start, end);
+    Line(Point2D.Float start, Point2D.Float end, Matrix ctm) {
+        super(start, end, ctm);
     }
 
     //

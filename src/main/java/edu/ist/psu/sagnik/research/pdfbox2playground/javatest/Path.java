@@ -1,5 +1,7 @@
 package edu.ist.psu.sagnik.research.pdfbox2playground.javatest;
 
+import org.apache.pdfbox.util.Matrix;
+
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,10 +28,10 @@ public class Path implements Iterable<SubPath>
         this.windingRule = windingRule;
     }
 
-    void appendRectangle(Point2D.Float p0, Point2D.Float p1, Point2D.Float p2, Point2D.Float p3) throws IOException
+    void appendRectangle(Point2D.Float p0, Point2D.Float p1, Point2D.Float p2, Point2D.Float p3,Matrix ctm) throws IOException
     {
         finishSubPath();
-        currentSubPath = new Rectangle(p0, p1, p2, p3);
+        currentSubPath = new Rectangle(p0, p1, p2, p3,ctm);
         finishSubPath();
     }
 
@@ -39,14 +41,14 @@ public class Path implements Iterable<SubPath>
         currentSubPath = new SubPath(new Point2D.Float(x, y));
     }
 
-    void lineTo(float x, float y) throws IOException
+    void lineTo(float x, float y, Matrix ctm) throws IOException
     {
-        currentSubPath.lineTo(x, y);
+        currentSubPath.lineTo(x, y, ctm);
     }
 
-    void curveTo(float x1, float y1, float x2, float y2, float x3, float y3) throws IOException
+    void curveTo(float x1, float y1, float x2, float y2, float x3, float y3, Matrix ctm) throws IOException
     {
-        currentSubPath.curveTo(x1, y1, x2, y2, x3, y3, currentSubPath);
+        currentSubPath.curveTo(x1, y1, x2, y2, x3, y3,ctm);
     }
 
     Point2D.Float getCurrentPoint() throws IOException
@@ -54,9 +56,9 @@ public class Path implements Iterable<SubPath>
         return currentSubPath.currentPoint;
     }
 
-    void closePath() throws IOException
+    void closePath(Matrix ctm) throws IOException
     {
-        currentSubPath.closePath();
+        currentSubPath.closePath(ctm);
         finishSubPath();
     }
 
@@ -99,6 +101,7 @@ public class Path implements Iterable<SubPath>
     }
 
     //Point2D.Float currentPoint = null;
+
     SubPath currentSubPath = null;
     int windingRule = -1;
     final List<SubPath> subPaths = new ArrayList<>();

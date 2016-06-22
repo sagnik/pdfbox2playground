@@ -34,7 +34,7 @@ public class ClipPathFinder extends PDFGraphicsStreamEngine implements Iterable<
     public void appendRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3) throws IOException
     {
         startPathIfNecessary();
-        currentPath.appendRectangle(toFloat(p0), toFloat(p1), toFloat(p2), toFloat(p3));
+        currentPath.appendRectangle(toFloat(p0), toFloat(p1), toFloat(p2), toFloat(p3),getCurrentPage().getMatrix());
     }
 
     @Override
@@ -58,13 +58,13 @@ public class ClipPathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void lineTo(float x, float y) throws IOException
     {
-        currentPath.lineTo(x, y);
+        currentPath.lineTo(x, y,getCurrentPage().getMatrix());
     }
 
     @Override
     public void curveTo(float x1, float y1, float x2, float y2, float x3, float y3) throws IOException
     {
-        currentPath.curveTo(x1, y1, x2, y2, x3, y3);
+        currentPath.curveTo(x1, y1, x2, y2, x3, y3,getCurrentPage().getMatrix());
     }
 
     @Override
@@ -76,7 +76,7 @@ public class ClipPathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void closePath() throws IOException
     {
-        currentPath.closePath();
+        currentPath.closePath(getCurrentPage().getMatrix());
     }
 
     @Override

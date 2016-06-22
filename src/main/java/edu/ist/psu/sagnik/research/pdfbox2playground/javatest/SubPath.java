@@ -1,5 +1,7 @@
 package edu.ist.psu.sagnik.research.pdfbox2playground.javatest;
 
+import org.apache.pdfbox.util.Matrix;
+
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -21,38 +23,38 @@ public class SubPath implements Iterable<Segment>
         return start;
     }
 
-    void lineTo(float x, float y)
+    void lineTo(float x, float y, Matrix ctm)
     {
         Point2D.Float end = new Point2D.Float(x, y);
-        segments.add(new Line(currentPoint, end));
+        segments.add(new Line(currentPoint, end, ctm));
         //System.out.println("Got a line, "+new Line(currentPoint, end));
         currentPoint = end;
     }
 
-    void curveTo(float x1, float y1, float x2, float y2, float x3, float y3, SubPath cS)
+    void curveTo(float x1, float y1, float x2, float y2, float x3, float y3, SubPath cS, Matrix ctm)
     {
         Point2D.Float control1 = new Point2D.Float(x1, y1);
         Point2D.Float control2 = new Point2D.Float(x2, y2);
         Point2D.Float end = new Point2D.Float(x3, y3);
-        segments.add(new Curve(currentPoint, control1, control2, end));
+        segments.add(new Curve(currentPoint, control1, control2, end, ctm));
         //System.out.println(new Curve(currentPoint, control1, control2, end)+", at subpath "+ cS.hashCode());
         currentPoint = end;
     }
 
-    void curveTo(float x1, float y1, float x2, float y2, float x3, float y3)
+    void curveTo(float x1, float y1, float x2, float y2, float x3, float y3, Matrix ctm)
     {
         Point2D.Float control1 = new Point2D.Float(x1, y1);
         Point2D.Float control2 = new Point2D.Float(x2, y2);
         Point2D.Float end = new Point2D.Float(x3, y3);
-        segments.add(new Curve(currentPoint, control1, control2, end));
+        segments.add(new Curve(currentPoint, control1, control2, end, ctm));
         //System.out.println("Got a curve, "+new Curve(currentPoint, control1, control2, end));
         currentPoint = end;
     }
 
-    void closePath()
+    void closePath(Matrix ctm)
     {
         closed = true;
-        segments.add(new Line(currentPoint,start));
+        segments.add(new Line(currentPoint,start,ctm));
         //System.out.println("Got a line, "+new Line(currentPoint, start));
         currentPoint = start;
     }

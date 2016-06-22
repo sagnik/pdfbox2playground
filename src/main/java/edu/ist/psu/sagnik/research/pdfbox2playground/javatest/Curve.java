@@ -1,5 +1,7 @@
 package edu.ist.psu.sagnik.research.pdfbox2playground.javatest;
 
+import org.apache.pdfbox.util.Matrix;
+
 import java.awt.geom.Point2D;
 
 /**
@@ -7,9 +9,9 @@ import java.awt.geom.Point2D;
  */
 public class Curve extends Segment
 {
-    Curve(Point2D.Float start, Point2D.Float control1, Point2D.Float control2, Point2D.Float end)
+    Curve(Point2D.Float start, Point2D.Float control1, Point2D.Float control2, Point2D.Float end, Matrix ctm)
     {
-        super(start, end);
+        super(start, end, ctm);
         this.control1 = control1;
         this.control2 = control2;
     }

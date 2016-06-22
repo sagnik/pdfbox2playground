@@ -34,7 +34,8 @@ object ShowLinePaths {
     val segments=finder.iterator.asScala.toList.flatMap(x=>x.getSubPaths.asScala.toList)
     .flatMap(x=>x.iterator().asScala.toList)
 
-    segments.foreach(x=>println(x.getStart,x.getEnd,x.getClass))
+    segments.foreach(x=>println(x.getStart,x.getEnd,x.getCTM))
+
     val lines=segments.filter(x=>x.isInstanceOf[edu.ist.psu.sagnik.research.pdfbox2playground.javatest.Line])
     val curves=segments.filter(x=>x.isInstanceOf[edu.ist.psu.sagnik.research.pdfbox2playground.javatest.Curve])
 

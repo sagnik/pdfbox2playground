@@ -32,9 +32,8 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void appendRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3) throws IOException
     {
-        //System.out.println("will call rect now");
         startPathIfNecessary();
-        currentPath.appendRectangle(toFloat(p0), toFloat(p1), toFloat(p2), toFloat(p3));
+        currentPath.appendRectangle(toFloat(p0), toFloat(p1), toFloat(p2), toFloat(p3),getGraphicsState().getCurrentTransformationMatrix());
     }
 
     @Override
@@ -43,33 +42,10 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void clip(int windingRule) throws IOException
     {
-/*
-
-        int rectangle=0;
-        int line=0;
-        int curve=0;
-        for (SubPath sp:currentPath.subPaths){
-            if (sp instanceof Rectangle)
-                rectangle+=1;
-            else {
-                for (Segment s : sp.segments) {
-                    if (s instanceof Line) {
-                        Line ls= (Line)s;
-                        //System.out.println(ls.getStart()+","+ls.getEnd());
-                        line += 1;
-                    }
-                    else if (s instanceof Curve)
-                        curve+=1;
-                }
-            }
-        }
-        //System.out.println("in clip path, rectangle: "+rectangle+" lines "+line+" curves "+curve);
-*/
-        //System.out.println("before clip current path contains: "+currentPath.subPaths.size());
         currentPath.complete(windingRule);
-        //System.out.println("after clip current path contains: "+currentPath.subPaths.size());
-        paths.add(currentPath);
-        currentPath = null;
+        //paths.add(currentPath);
+        //currentPath = null;
+
     }
 
     @Override
@@ -82,14 +58,13 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void lineTo(float x, float y) throws IOException
     {
-        //System.out.println("will call line now");
-        currentPath.lineTo(x, y);
+        currentPath.lineTo(x, y, getGraphicsState().getCurrentTransformationMatrix());
     }
 
     @Override
     public void curveTo(float x1, float y1, float x2, float y2, float x3, float y3) throws IOException
     {
-        currentPath.curveTo(x1, y1, x2, y2, x3, y3);
+        currentPath.curveTo(x1, y1, x2, y2, x3, y3,  getGraphicsState().getCurrentTransformationMatrix());
     }
 
     @Override
@@ -101,7 +76,7 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void closePath() throws IOException
     {
-        currentPath.closePath();
+        currentPath.closePath(getGraphicsState().getCurrentTransformationMatrix());
     }
 
     @Override
