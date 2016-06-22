@@ -1,5 +1,7 @@
 package edu.ist.psu.sagnik.research.pdfbox2playground.path.model
 
+import java.awt.geom.Point2D
+
 import edu.ist.psu.sagnik.research.pdfbox2playground.model.Rectangle
 import org.apache.pdfbox.util.Matrix
 
@@ -24,28 +26,27 @@ As discussed in Section 4.1, “Graphics Objects,” a path object is defined by
 of operators to construct the path, followed by one or more operators to
 paint the path or to use it as a clipping boundary.
  */
-case class Point(x:Float,y:Float)
-
-trait PDOperator{
-  def getBoundingBox[A](lEP:Point, ctm:Matrix, paths:Seq[Any]):Rectangle
-  def getEndPoint[A](lEP:Point, paths:Seq[Any]):Point
-}
 
 trait Segment{
-  def startPoint:Point
-  def endPoint:Point
-  //def getBoundingBox[A](endPoint:Point, ctm:Matrix, paths:Seq[Any]):Rectangle
+  def startPoint:Point2D.Float
+  def endPoint:Point2D.Float
+  def ctm: Matrix
+  //def getBoundingBox[A](lastEndPoint:Point):Rectangle
+  //def getEndPoint[A](lastEndPoint:Point):Point
 }
 
-case class MoveOperator(startPoint:Point,endPoint:Point) extends Segment
-case class LineOperator(startPoint:Point,endPoint:Point) extends Segment
-case class BCurveCOperator(startPoint:Point,endPoint:Point) extends Segment
-case class BCurveVOperator(startPoint:Point,endPoint:Point) extends Segment
-case class BCurveYOperator(startPoint:Point,endPoint:Point) extends Segment
-case class CloseOperator(startPoint:Point,endPoint:Point) extends Segment
-case class RectOperator(startPoint:Point,endPoint:Point) extends Segment
+trait SubPath{
+  def segments:List[Segment]
+}
 
-case class SubPath(segments:IndexedSeq[Segment])
+
+case class Line(startPoint:Point2D.Float,endPoint:Point2D.Float, ctm: Matrix) extends Segment
+case class Curve(startPoint:Point2D.Float,endPoint:Point2D.Float, controlPoint1:
+Point2D.Float, controlPoint2: Point2D.Float, ctm: Matrix) extends Segment
+case class PDRect(segments:List[Line]) extends SubPath
+case class PDShape(segments:List[Segment]) extends SubPath
+
+case class Path(currentPoint:Point2D.Float,subPaths:List[SubPath],isClip:Boolean,doPaint:Boolean, windingRule:Int)
 
 //this comes from the graphics state
 case class PathStyle(
