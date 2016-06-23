@@ -50,7 +50,9 @@ object ShowLinePaths {
 
 
 
-    val segments1=finder1.paths.flatMap(x=>x.subPaths)
+    val segments1=finder1.paths
+      .filter(x=> !x.isClip)
+      .flatMap(x=>x.subPaths)
       .flatMap(x=>x.segments)
 
     //segments1.foreach(x=>println(x.startPoint,x.endPoint,x.ctm))
@@ -61,14 +63,16 @@ object ShowLinePaths {
     val segments2=finder2.iterator.asScala.toList.flatMap(x=>x.getSubPaths.asScala.toList)
       .flatMap(x=>x.iterator().asScala.toList)
 
-    val lines2=segments1.filter(x=>x.isInstanceOf[PDLine])
-    val curves2=segments1.filter(x=>x.isInstanceOf[PDCurve])
+    val lines2=segments2.filter(x=>x.isInstanceOf[edu.ist.psu.sagnik.research.pdfbox2playground.javatest.Line])
+    val curves2=segments2.filter(x=>x.isInstanceOf[edu.ist.psu.sagnik.research.pdfbox2playground.javatest.Curve])
 
 
-    //println(s"Segments length: ${segments.length}, lines: ${lines.length}, curves: ${curves.length}")
-    //println(s"number of moves: ${finder1.numMoves}, rects: ${finder1.numRects}, lines: ${finder1.numLines}, curves: ${finder1.numCurves}  ")
+    println(s"1[Scala]: Segments length: ${segments1.length}, lines: ${lines1.length}, curves: ${curves1.length}")
+    println(s"2[Java]: Segments length: ${segments2.length}, lines: ${lines2.length}, curves: ${curves2.length}")
 
-    println(finder1.paths.length,finder2.iterator.asScala.toList.length)
+    println(s"number of moves: ${finder1.numMoves}, rects: ${finder1.numRects}, lines: ${finder1.numLines}, curves: ${finder1.numCurves}, close Paths: ${finder1.numClosePaths}")
+
+    println(finder1.paths.filter(x=> !x.isClip).length,finder2.iterator.asScala.toList.length)
     document.close();
   }
 

@@ -23,6 +23,7 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
   var numRects=0
   var numLines=0
   var numCurves=0
+  var numClosePaths=0
 
   //def this(page:PDPage)= this(page)
 
@@ -39,48 +40,47 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
   @Override @throws[IOException]
   def appendRectangle(p0: Point2D, p1: Point2D, p2: Point2D, p3: Point2D):Unit={
     numRects+=1
+    subPathComplete()
     currentPoint=fp(p3)
-    currentPath match{
-      case Some(cp) => currentPath= Some(//a current path exists, add this rectangle to the subpaths.
-        cp.copy(
-          subPaths = cp.subPaths :+
-            PDRect(
-              segments = List(
-                PDLine(fp(p0), fp(p1), getCTM),
-                PDLine(fp(p1), fp(p2), getCTM),
-                PDLine(fp(p2), fp(p3), getCTM),
-                PDLine(fp(p3), fp(p1), getCTM)
-              )
-            )
+    currentSubPath=Some(
+      PDShape(
+        segments = List(
+          PDLine(fp(p0), fp(p1), getCTM),
+          PDLine(fp(p1), fp(p2), getCTM),
+          PDLine(fp(p2), fp(p3), getCTM),
+          PDLine(fp(p3), fp(p1), getCTM)
         )
       )
-
-      case _ =>currentPath = Some(//this is the beginning of a new path
+    )
+    (currentPath, currentSubPath) match{
+      case (Some(cp),Some(csp)) => currentPath= Some(//a current path exists, add this whole subpath to the subpaths.
+        cp.copy(
+          subPaths = cp.subPaths :+ csp
+        )
+      )
+        currentSubPath=None
+      case (None,Some(csp)) =>currentPath = Some(//this is the beginning of a new path
         PDPath(
-          subPaths = List(
-            PDRect(
-              segments = List(
-                PDLine(fp(p0), fp(p1), getCTM),
-                PDLine(fp(p1), fp(p2), getCTM),
-                PDLine(fp(p2), fp(p3), getCTM),
-                PDLine(fp(p3), fp(p1), getCTM)
-              )
-            )
-          ),
+          subPaths = List(csp),
           isClip = false,
           doPaint = true,
           windingRule = -1
-
         )
       )
+        currentSubPath=None
+      case _ =>
 
     }
+    // subPathComplete()
   }
 
   @Override @throws[IOException]
   def moveTo(x: Float, y: Float):Unit={
     numMoves+=1
+    subPathComplete()
     currentPoint = new Point2D.Float(x,y)
+    //we will not create a subpath here. Just a path. Because move will actually not do anything than to
+    // start a path and change the current point
     currentPath match{
       case Some (cp) => currentPath = Some(cp)
       case _ => currentPath = Some(//this is the beginning of a new path
@@ -93,6 +93,7 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
       )
 
     }
+
   }
 
   //if we have a `l` (lineto) operator, the path must have been started already
@@ -160,35 +161,43 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
   //Obviously, currentSubPath.segments should not be empty if we see this operator.
   //TODO: Handle case where currentSubPath.segments is empty
   @Override @throws[IOException]
-  def closePath():Unit = currentSubPath match{
-    case Some(csp) =>
-      val startPoint= csp.segments.head.startPoint
-      Some(
-        csp.copy(
-          segments = csp.segments :+ PDLine(currentPoint,startPoint,getCTM)
-      )
-      )
-      subPathComplete()
-      currentPoint=startPoint
+  def closePath():Unit = {
+    numClosePaths+=1
+    currentSubPath match{
+      case Some(csp) => {
+        val startPoint = csp.segments.head.startPoint
+        currentSubPath= Some(
+          csp.copy(
+            segments = csp.segments :+ PDLine(currentPoint, startPoint, getCTM)
+          )
+        )
+        currentPoint = startPoint
+        subPathComplete()
+      }
+      case _ => System.err.println("A path encountered a close operator before it even started. " +
+        "It will henceforth be known as Rickon Stark Blvd.") //should never reach here
 
-    case _ => System.err.println("A path encountered a close operator before it even started. " +
-      "It will henceforth be known as Rickon Stark Blvd.") //should never reach here
+    }
+
   }
 
   //this method will `complete` the current sub path, i.e., will add it to the current path and
   // mark the current subpath as None
-  def subPathComplete():Unit= (currentPath, currentSubPath) match {
-    case (Some(cp),Some(csp)) =>
-      currentPath =
-        Some(
-          cp.copy(
-            subPaths = cp.subPaths :+ csp
+  def subPathComplete():Unit= {
+    (currentPath, currentSubPath) match {
+      case (Some(cp),Some(csp)) =>
+        currentPath =
+          Some(
+            cp.copy(
+              subPaths = cp.subPaths :+ csp
+            )
           )
-        )
-      currentSubPath=None
-
-    case _ => System.err.println(s"We encountered a NULL current sub path <${currentSubPath==None}> or path <${currentPath==None}>.") //should never come here
+      case _ =>
+    }
+    currentSubPath=None
   }
+
+
 
   @Override @throws[IOException]
   //TODO: Revisit, this might be important from the clipping perspective
@@ -199,40 +208,44 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
 
   @Override @throws[IOException]
   def strokePath():Unit  = {
+    //println("in strokepath")
     subPathComplete()
     currentPath match{
       case Some(cp) => paths=paths :+ cp
-      case _ =>
+      case _ => System.err.println("Stroke Path operator encountered for empty path")
     }
     currentPath=None
   }
 
   @Override @throws[IOException]
   def fillPath(windingRule:Int):Unit = {
+    //println("in fillpath")
     subPathComplete()
     currentPath match{
       case Some(cp) => paths=paths :+ cp.copy(windingRule=windingRule)
-      case _ =>
+      case _ => System.err.println("Fill Path operator encountered for empty path")
     }
     currentPath=None
   }
 
   @Override @throws[IOException]
   def fillAndStrokePath(windingRule:Int):Unit = {
+    //println("in fill and strokepath")
     subPathComplete()
     currentPath match{
       case Some(cp) => paths=paths :+ cp.copy(windingRule=windingRule)
-      case _ =>
+      case _ => System.err.println("Fill and Stroke Path operator encountered for empty path")
     }
     currentPath=None
   }
 
   @Override @throws[IOException]
   def shadingFill(shadingName: COSName):Unit = {
+    //println("in shading fill")
     subPathComplete()
     currentPath match{
       case Some(cp) => paths=paths :+ cp
-      case _ =>
+      case _ => System.err.println("Shading Fill Path operator encountered for empty path")
     }
     currentPath=None
   }
@@ -240,11 +253,13 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
   //***** path clipping operators *********//
   @Override @throws[IOException]
   def clip(windingRule:Int):Unit = {
+    //println("in clip")
     subPathComplete()
     currentPath match{
       case Some(cp) => paths=paths :+ cp.copy(windingRule=windingRule,isClip = true)
-      case _ =>
+      case _ => System.err.println("Clip path operator encountered for empty path")
     }
+
   }
 
 
