@@ -6,6 +6,7 @@ import edu.ist.psu.sagnik.research.pdfbox2playground.javatest.{ClipPathFinder, L
 import edu.ist.psu.sagnik.research.pdfbox2playground.javatest.Segment
 import edu.ist.psu.sagnik.research.pdfbox2playground.path.impl.ProcessPaths
 import edu.ist.psu.sagnik.research.pdfbox2playground.path.model.{PDCurve, PDLine}
+import edu.ist.psu.sagnik.research.pdfbox2playground.writer.svg.CreateSVG
 import org.apache.pdfbox.pdmodel.PDDocument
 
 import scala.collection.JavaConverters._
@@ -60,19 +61,24 @@ object ShowLinePaths {
     val lines1=segments1.filter(x=>x.isInstanceOf[PDLine])
     val curves1=segments1.filter(x=>x.isInstanceOf[PDCurve])
 
-    val segments2=finder2.iterator.asScala.toList.flatMap(x=>x.getSubPaths.asScala.toList)
-      .flatMap(x=>x.iterator().asScala.toList)
+    segments1.foreach(x=>println(x.startPoint,x.endPoint,x.ctm))
 
-    val lines2=segments2.filter(x=>x.isInstanceOf[edu.ist.psu.sagnik.research.pdfbox2playground.javatest.Line])
-    val curves2=segments2.filter(x=>x.isInstanceOf[edu.ist.psu.sagnik.research.pdfbox2playground.javatest.Curve])
+//    val segments2=finder2.iterator.asScala.toList.flatMap(x=>x.getSubPaths.asScala.toList)
+//      .flatMap(x=>x.iterator().asScala.toList)
+//
+//    val lines2=segments2.filter(x=>x.isInstanceOf[edu.ist.psu.sagnik.research.pdfbox2playground.javatest.Line])
+//    val curves2=segments2.filter(x=>x.isInstanceOf[edu.ist.psu.sagnik.research.pdfbox2playground.javatest.Curve])
+//
+//
+//    println(s"1[Scala]: Segments length: ${segments1.length}, lines: ${lines1.length}, curves: ${curves1.length}")
+//    println(s"2[Java]: Segments length: ${segments2.length}, lines: ${lines2.length}, curves: ${curves2.length}")
+//
+//
+//    println(finder1.paths.filter(x=> !x.isClip).length,finder2.iterator.asScala.toList.length)
 
+    CreateSVG(segments1,"src/test/resources/test-page-5.svg",width=page.getMediaBox.getHeight,height=page.getMediaBox.getHeight,fromScala=true)
+    println("written SVG paths")
 
-    println(s"1[Scala]: Segments length: ${segments1.length}, lines: ${lines1.length}, curves: ${curves1.length}")
-    println(s"2[Java]: Segments length: ${segments2.length}, lines: ${lines2.length}, curves: ${curves2.length}")
-
-    println(s"number of moves: ${finder1.numMoves}, rects: ${finder1.numRects}, lines: ${finder1.numLines}, curves: ${finder1.numCurves}, close Paths: ${finder1.numClosePaths}")
-
-    println(finder1.paths.filter(x=> !x.isClip).length,finder2.iterator.asScala.toList.length)
     document.close();
   }
 

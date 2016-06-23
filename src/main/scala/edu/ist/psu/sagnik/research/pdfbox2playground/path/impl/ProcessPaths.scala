@@ -19,11 +19,11 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
   var currentPath:Option[PDPath]=None
   var currentSubPath:Option[PDShape]=None
   var currentPoint=new Point2D.Float(0f,0f)
-  var numMoves=0
-  var numRects=0
-  var numLines=0
-  var numCurves=0
-  var numClosePaths=0
+  //var numMoves=0
+  //var numRects=0
+  //var numLines=0
+  //var numCurves=0
+  //var numClosePaths=0
 
   //def this(page:PDPage)= this(page)
 
@@ -39,7 +39,7 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
 
   @Override @throws[IOException]
   def appendRectangle(p0: Point2D, p1: Point2D, p2: Point2D, p3: Point2D):Unit={
-    numRects+=1
+    //numRects+=1
     subPathComplete()
     currentPoint=fp(p3)
     currentSubPath=Some(
@@ -48,7 +48,7 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
           PDLine(fp(p0), fp(p1), getCTM),
           PDLine(fp(p1), fp(p2), getCTM),
           PDLine(fp(p2), fp(p3), getCTM),
-          PDLine(fp(p3), fp(p1), getCTM)
+          PDLine(fp(p3), fp(p0), getCTM)
         )
       )
     )
@@ -76,7 +76,7 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
 
   @Override @throws[IOException]
   def moveTo(x: Float, y: Float):Unit={
-    numMoves+=1
+    //numMoves+=1
     subPathComplete()
     currentPoint = new Point2D.Float(x,y)
     //we will not create a subpath here. Just a path. Because move will actually not do anything than to
@@ -85,7 +85,7 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
       case Some (cp) => currentPath = Some(cp)
       case _ => currentPath = Some(//this is the beginning of a new path
         PDPath(
-          subPaths = List.empty[PDSubPath],
+          subPaths = List.empty[PDShape],
           isClip = false,
           doPaint = true,
           windingRule = -1
@@ -102,7 +102,7 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
 
   @Override @throws[IOException]
   def lineTo(x: Float, y: Float):Unit= {
-    numLines+=1
+    //numLines+=1
     currentSubPath match{
       case Some(csp) => currentSubPath = Some(
         csp.copy(
@@ -123,7 +123,7 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
 
   @Override @throws[IOException]
   def curveTo(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float):Unit={
-    numCurves+=1
+    //numCurves+=1
     currentSubPath match{
       case Some(csp) => currentSubPath = Some(
         csp.copy(
@@ -162,7 +162,7 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
   //TODO: Handle case where currentSubPath.segments is empty
   @Override @throws[IOException]
   def closePath():Unit = {
-    numClosePaths+=1
+    //numClosePaths+=1
     currentSubPath match{
       case Some(csp) => {
         val startPoint = csp.segments.head.startPoint
