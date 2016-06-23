@@ -16,6 +16,11 @@ import java.util.List;
  */
 public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<Path>
 {
+    public int numMoves=0;
+    public int numRects=0;
+    public int numLines=0;
+    public int numCurves=0;
+
     public LinePathFinder(PDPage page)
     {
         super(page);
@@ -32,6 +37,7 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void appendRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3) throws IOException
     {
+        numRects+=1;
         startPathIfNecessary();
         currentPath.appendRectangle(toFloat(p0), toFloat(p1), toFloat(p2), toFloat(p3),getGraphicsState().getCurrentTransformationMatrix());
     }
@@ -51,6 +57,7 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void moveTo(float x, float y) throws IOException
     {
+        numMoves+=1;
         startPathIfNecessary();
         currentPath.moveTo(x, y);
     }
@@ -58,12 +65,14 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void lineTo(float x, float y) throws IOException
     {
+        numLines+=1;
         currentPath.lineTo(x, y, getGraphicsState().getCurrentTransformationMatrix());
     }
 
     @Override
     public void curveTo(float x1, float y1, float x2, float y2, float x3, float y3) throws IOException
     {
+        numCurves+=1;
         currentPath.curveTo(x1, y1, x2, y2, x3, y3,  getGraphicsState().getCurrentTransformationMatrix());
     }
 
