@@ -19,15 +19,8 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
   var currentPath:Option[PDPath]=None
   var currentSubPath:Option[PDShape]=None
   var currentPoint=new Point2D.Float(0f,0f)
-  //var numMoves=0
-  //var numRects=0
-  //var numLines=0
-  //var numCurves=0
-  //var numClosePaths=0
 
-  //def this(page:PDPage)= this(page)
-
-  def getCTM:Matrix = getGraphicsState.getCurrentTransformationMatrix
+  def getCTM:Matrix = this.getGraphicsState.getCurrentTransformationMatrix
 
   def getPaths():Unit=processPage(getPage)
 

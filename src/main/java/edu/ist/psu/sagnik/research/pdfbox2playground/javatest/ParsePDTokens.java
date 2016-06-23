@@ -6,6 +6,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,9 +27,18 @@ public class ParsePDTokens {
         int clipPaths=0;
         int noOps=0;
         int closeLines=0;
+        int index=0;
         for (Object token:tokens){
             if (token instanceof Operator) {
                 Operator op=(Operator) token;
+                if ("cm".equals(op.getName())){
+                    System.out.println("<index>: "+index);
+                    System.out.println("-------------------------");
+                    for (int i=6; i>0; i--){
+                        System.out.println(tokens.get(index-i));
+                    }
+                    System.out.println("-------------------------");
+                }
                 if ("h".equals(op.getName()))
                     closeLines+=1;
                 else if ("n".equals(op.getName()))
@@ -40,19 +50,20 @@ public class ParsePDTokens {
                 else if ("l".equals(op.getName()))
                     lines+=1;
                 else if ("c".equals(op.getName())||"y".equals(op.getName()) ||"v".equals(op.getName())){
-                    System.out.println(op);
+                    System.out.println("[index]: "+index);
                     curves+=1;
                 }
                 else if ("re".equals(op.getName()))
                     rectangles+=1;
-
             }
+            index++;
         }
-        System.out.println(
+
+        /*System.out.println(
                 "lines: "+lines+", closeLines: "+closeLines+", curves: "+
                 curves+", rectangles: "+rectangles+", doops: "+doOps+
                         ", clipPaths: "+clipPaths+", noOps: "+noOps);
-
+*/
     }
 
 

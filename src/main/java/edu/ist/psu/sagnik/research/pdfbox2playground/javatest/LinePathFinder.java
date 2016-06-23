@@ -16,10 +16,7 @@ import java.util.List;
  */
 public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<Path>
 {
-    public int numMoves=0;
-    public int numRects=0;
-    public int numLines=0;
-    public int numCurves=0;
+    public int index=0;
 
     public LinePathFinder(PDPage page)
     {
@@ -37,17 +34,18 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void appendRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3) throws IOException
     {
-        numRects+=1;
+        index+=1;
         startPathIfNecessary();
         currentPath.appendRectangle(toFloat(p0), toFloat(p1), toFloat(p2), toFloat(p3),getGraphicsState().getCurrentTransformationMatrix());
     }
 
     @Override
-    public void drawImage(PDImage pdImage) throws IOException { }
+    public void drawImage(PDImage pdImage) throws IOException { index+=1;}
 
     @Override
     public void clip(int windingRule) throws IOException
     {
+        index+=1;
         currentPath.complete(windingRule);
         //paths.add(currentPath);
         //currentPath = null;
@@ -57,7 +55,7 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void moveTo(float x, float y) throws IOException
     {
-        numMoves+=1;
+        index+=1;
         startPathIfNecessary();
         currentPath.moveTo(x, y);
     }
@@ -65,26 +63,30 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void lineTo(float x, float y) throws IOException
     {
-        numLines+=1;
+        index+=1;
         currentPath.lineTo(x, y, getGraphicsState().getCurrentTransformationMatrix());
     }
 
     @Override
     public void curveTo(float x1, float y1, float x2, float y2, float x3, float y3) throws IOException
     {
-        numCurves+=1;
+        System.out.println("[index]: "+index);
+        System.out.println(getGraphicsState().getCurrentTransformationMatrix());
+        index+=1;
         currentPath.curveTo(x1, y1, x2, y2, x3, y3,  getGraphicsState().getCurrentTransformationMatrix());
     }
 
     @Override
     public Point2D.Float getCurrentPoint() throws IOException
     {
+        index+=1;
         return currentPath.getCurrentPoint();
     }
 
     @Override
     public void closePath() throws IOException
     {
+        index+=1;
         currentPath.closePath(getGraphicsState().getCurrentTransformationMatrix());
     }
 
@@ -93,12 +95,14 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     {
         //paths.add(currentPath); //this has no effect because `n` always follows `W`
         // or `W*`. We are setting currentPath to null in those cases anyway.
+        index+=1;
         currentPath = null;
     }
 
     @Override
     public void strokePath() throws IOException
     {
+        index+=1;
         currentPath.complete(-2);
         paths.add(currentPath);
         currentPath = null;
@@ -107,6 +111,7 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void fillPath(int windingRule) throws IOException
     {
+        index+=1;
         currentPath.complete(-2);
         paths.add(currentPath);
         currentPath = null;
@@ -115,6 +120,7 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void fillAndStrokePath(int windingRule) throws IOException
     {
+        index+=1;
         currentPath.complete(-2);
         paths.add(currentPath);
         currentPath = null;
@@ -123,6 +129,7 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
     @Override
     public void shadingFill(COSName shadingName) throws IOException
     {
+        index+=1;
         currentPath.complete(-2);
         paths.add(currentPath);
         currentPath = null;
@@ -130,6 +137,7 @@ public class LinePathFinder extends PDFGraphicsStreamEngine implements Iterable<
 
     void startPathIfNecessary()
     {
+        index+=1;
         if (currentPath == null)
             currentPath = new Path();
     }

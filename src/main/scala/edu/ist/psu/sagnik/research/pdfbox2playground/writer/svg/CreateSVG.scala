@@ -14,19 +14,19 @@ object CreateSVG {
     s match {
         case s: PDLine =>
       "<path d=\"M " +
-      (w -s.startPoint.x).toString + "," + (h - s.startPoint.y).toString +
+      (s.startPoint.x).toString + "," + (h - s.startPoint.y).toString +
       " L " +
-      (w - s.endPoint.x).toString + "," + (h - s.endPoint.y).toString +
+      (s.endPoint.x).toString + "," + (h - s.endPoint.y).toString +
       "\" style=\"fill:none;stroke:#000000;stroke-width:0.39300001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;\" " +
       " xmlns=\"http://www.w3.org/2000/svg\" xmlns:svg=\"http://www.w3.org/2000/svg\"/>"
 
         case s: PDCurve =>
           "<path d=\"M " +
-            (w -s.startPoint.x).toString + "," + (h - s.startPoint.y).toString +
+            (s.startPoint.x).toString + "," + (h - s.startPoint.y).toString +
             " C " +
-            (w - s.controlPoint1.x).toString + "," + (h - s.controlPoint1.y).toString + " "+
-            (w - s.controlPoint2.x).toString + "," + (h - s.controlPoint2.y).toString + " "+
-            (w - s.endPoint.x).toString + "," + (h - s.endPoint.y).toString + " "+
+            (s.controlPoint1.x).toString + "," + (h - s.controlPoint1.y).toString + " "+
+            (s.controlPoint2.x).toString + "," + (h - s.controlPoint2.y).toString + " "+
+            (s.endPoint.x).toString + "," + (h - s.endPoint.y).toString + " "+
             "\" style=\"fill:none;stroke:#000000;stroke-width:0.39300001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;\" " +
             " xmlns=\"http://www.w3.org/2000/svg\" xmlns:svg=\"http://www.w3.org/2000/svg\"/>"
 
@@ -35,18 +35,18 @@ object CreateSVG {
 
   def svgLineString(s:Segment,w:Float,h:Float):String=
     "<path d=\"M " +
-      (w-s.getStart.x).toString+","+(h-s.getStart.y).toString+
+      (s.getStart.x).toString+","+(h-s.getStart.y).toString+
       " L " +
-      (w-s.getEnd.x).toString+","+(h-s.getEnd.y).toString +
+      (s.getEnd.x).toString+","+(h-s.getEnd.y).toString +
       "\" style=\"fill:none;stroke:#000000;stroke-width:0.39300001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;\" " +
       " xmlns=\"http://www.w3.org/2000/svg\" xmlns:svg=\"http://www.w3.org/2000/svg\"/>"
 
   def svgLineString(s:Segment,w:Float,h:Float,curveAware:Boolean):String=
     if (s.isInstanceOf[edu.ist.psu.sagnik.research.pdfbox2playground.javatest.Line])
       "<path d=\"M " +
-        (w-s.getStart.x).toString+","+(h-s.getStart.y).toString+
+        (s.getStart.x).toString+","+(h-s.getStart.y).toString+
         " L " +
-        (w-s.getEnd.x).toString+","+(h-s.getEnd.y).toString +
+        (s.getEnd.x).toString+","+(h-s.getEnd.y).toString +
         "\" style=\"fill:none;stroke:#000000;stroke-width:0.39300001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;\" " +
         " xmlns=\"http://www.w3.org/2000/svg\" xmlns:svg=\"http://www.w3.org/2000/svg\"/>"
     else

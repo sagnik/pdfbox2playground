@@ -55,6 +55,7 @@ object ShowLinePaths {
       .filter(x=> !x.isClip)
       .flatMap(x=>x.subPaths)
       .flatMap(x=>x.segments)
+      //.map(x=>Transform(x))
 
     //segments1.foreach(x=>println(x.startPoint,x.endPoint,x.ctm))
 
