@@ -27,7 +27,7 @@ of operators to construct the path, followed by one or more operators to
 paint the path or to use it as a clipping boundary.
  */
 
-trait Segment{
+trait PDSegment{
   def startPoint:Point2D.Float
   def endPoint:Point2D.Float
   def ctm: Matrix
@@ -35,18 +35,19 @@ trait Segment{
   //def getEndPoint[A](lastEndPoint:Point):Point
 }
 
-trait SubPath{
-  def segments:List[Segment]
+trait PDSubPath{
+  def segments:List[PDSegment]
 }
 
 
-case class Line(startPoint:Point2D.Float,endPoint:Point2D.Float, ctm: Matrix) extends Segment
-case class Curve(startPoint:Point2D.Float,endPoint:Point2D.Float, controlPoint1:
-Point2D.Float, controlPoint2: Point2D.Float, ctm: Matrix) extends Segment
-case class PDRect(segments:List[Line]) extends SubPath
-case class PDShape(segments:List[Segment]) extends SubPath
+case class PDLine(startPoint:Point2D.Float,endPoint:Point2D.Float, ctm: Matrix) extends PDSegment
+case class PDCurve(startPoint:Point2D.Float,endPoint:Point2D.Float, controlPoint1:
+Point2D.Float, controlPoint2: Point2D.Float, ctm: Matrix) extends PDSegment
 
-case class Path(currentPoint:Point2D.Float,subPaths:List[SubPath],isClip:Boolean,doPaint:Boolean, windingRule:Int)
+case class PDRect(segments:List[PDLine]) extends PDSubPath
+case class PDShape(segments:List[PDSegment]) extends PDSubPath
+
+case class PDPath(subPaths:List[PDSubPath],isClip:Boolean,doPaint:Boolean, windingRule:Int)
 
 //this comes from the graphics state
 case class PathStyle(
