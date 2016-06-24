@@ -18,9 +18,9 @@ object ShowLinePaths {
 
   def main(args: Array[String]):Unit={
     //val loc="src/test/resources/pdf_reference_1-7.pdf"
-    val loc="src/test/resources/test.pdf"
+    val loc="src/test/resources/test1.pdf"
     val document = PDDocument.load(new File(loc));
-    val page = document.getPage(4)
+    val page = document.getPage(7)
     //val page = document.getPage(5)
 
 

@@ -32,6 +32,7 @@ public class ParsePDTokens {
         for (Object token:tokens){
             if (token instanceof Operator) {
                 Operator op=(Operator) token;
+                System.out.println(op.getName());
                 if ("cm".equals(op.getName())){
                     System.out.println("<index>: "+index);
                     System.out.println("-------------------------");
@@ -44,7 +45,7 @@ public class ParsePDTokens {
                     closeLines+=1;
                 else if ("n".equals(op.getName()))
                     noOps+=1;
-                else if ("do".equals(op.getName()))
+                else if ("Do".equals(op.getName()))
                     doOps+=1;
                 else if ("W".equals(op.getName())|| "W*".equals(op.getName()))
                     clipPaths+=1;
@@ -60,17 +61,19 @@ public class ParsePDTokens {
             index++;
         }
 
-        /*System.out.println(
-                "lines: "+lines+", closeLines: "+closeLines+", curves: "+
+        System.out.println(
+                "total "+index+
+                ", lines: "+lines+", closeLines: "+closeLines+", curves: "+
                 curves+", rectangles: "+rectangles+", doops: "+doOps+
                         ", clipPaths: "+clipPaths+", noOps: "+noOps);
-*/
+
     }
 
 
 
     public static void main(String[] args) throws Exception{
         String loc=new DataLocation().pdLoc;
+        System.out.println(loc+", "+ new DataLocation().pdPageNumber);
         printContent(loc,new DataLocation().pdPageNumber);
     }
 

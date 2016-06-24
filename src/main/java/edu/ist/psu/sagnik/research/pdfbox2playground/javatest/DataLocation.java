@@ -11,6 +11,7 @@ public class DataLocation {
     DataLocation(){
         pdLoc="src/test/resources/pdf_reference_1-7.pdf";
         pdLoc="src/test/resources/pg_0005.pdf";
-        pdPageNumber=0;
+        pdLoc="src/test/resources/test1.pdf";
+        pdPageNumber=7;
     }
 }
