@@ -77,7 +77,7 @@ object ShowLinePaths {
 //
 //    println(finder1.paths.filter(x=> !x.isClip).length,finder2.iterator.asScala.toList.length)
 
-    CreateSVG(segments1,"src/test/resources/test-page-5.svg",width=page.getMediaBox.getHeight,height=page.getMediaBox.getHeight,fromScala=true)
+    CreateSVG(segments1,"src/test/resources/test-page-5.svg",width=page.getMediaBox.getWidth,height=page.getMediaBox.getHeight,fromScala=true)
     println("written SVG paths")
 
     document.close();

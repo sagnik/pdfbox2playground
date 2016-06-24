@@ -20,6 +20,7 @@ public class ParsePDTokens {
         PDFStreamParser parser = new PDFStreamParser(page);
         parser.parse();
         List<Object> tokens = parser.getTokens();
+        System.out.println(page.getMediaBox()+" , "+page.getCropBox());
         int lines=0;
         int curves=0;
         int rectangles=0;
