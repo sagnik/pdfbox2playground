@@ -58,23 +58,32 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
   }
 
   def getPathStyle():PathStyle={
-    //for fill and stroke opacities, the default values are being used, because I don't see a
-    //direct matching to PDF standards. See https://www.w3.org/TR/SVG/painting.html#FillOpacityProperty for
-    //fillRule.
+    //See https://www.w3.org/TR/SVG/painting.html#FillOpacityProperty for fillRule.
     PathStyle(
       fill=Some(getHexRGB(getGraphicsState.getNonStrokingColor)),
       fillRule=None,
-      fillOpacity=Some("1"),
+      fillOpacity=None,//Some("1"),
       stroke=Some(getHexRGB(getGraphicsState.getStrokingColor)),
       strokeWidth=Some(getGraphicsState.getLineWidth.toString),
-      strokeLineCap=Some(getGraphicsState.getLineCap.toString),
-      strokeLineJoin=Some(getGraphicsState.getLineJoin.toString),
+      strokeLineCap=getGraphicsState.getLineCap match{
+        case 0 => Some("butt")
+        case 1 => Some("round")
+        case 2 => Some("square")
+        case _ => None
+      },
+      strokeLineJoin=getGraphicsState.getLineJoin match{
+        case 0 => Some("miter")
+        case 1 => Some("round")
+        case 2 => Some("bevel")
+        case _ => None
+      },
+
       strokeMiterLimit=Some(getGraphicsState.getMiterLimit.toString),
       strokeDashArray= if (getGraphicsState.getLineDashPattern.getDashArray().length==2)
         Some(getGraphicsState.getLineDashPattern.getDashArray().toList(0)+", "+getGraphicsState.getLineDashPattern.getDashArray().toList(1))
         else None,
       strokeDashOffset=Some(getGraphicsState.getLineDashPattern.getPhase.toString), //TODO:check
-      strokeOpacity=Some("1")
+      strokeOpacity=None
     )
 
   }
@@ -255,7 +264,6 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
 
   @Override @throws[IOException]
   def strokePath():Unit  = {
-    //println("in strokepath")
     subPathComplete()
     currentPath match{
       case Some(cp) => paths=paths :+ cp.copy(pathStyle = cp.pathStyle.copy(fill=None))
@@ -266,10 +274,12 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
 
   @Override @throws[IOException]
   def fillPath(windingRule:Int):Unit = {
-    //println("in fillpath")
     subPathComplete()
     currentPath match{
-      case Some(cp) => paths=paths :+ cp.copy(windingRule=windingRule)
+      case Some(cp) => paths= windingRule match {
+        case 0 => paths :+ cp.copy (windingRule = windingRule, pathStyle = cp.pathStyle.copy (fillRule = Some ("evenodd"), stroke=None))
+        case 1 => paths :+ cp.copy (windingRule = windingRule, pathStyle = cp.pathStyle.copy (fillRule = Some ("nonzero"), stroke =None))
+      }
       case _ => System.err.println("Fill Path operator encountered for empty path")
     }
     currentPath=None
@@ -277,10 +287,12 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
 
   @Override @throws[IOException]
   def fillAndStrokePath(windingRule:Int):Unit = {
-    //println("in fill and strokepath")
     subPathComplete()
     currentPath match{
-      case Some(cp) => paths=paths :+ cp.copy(windingRule=windingRule)
+      case Some(cp) => paths= windingRule match {
+        case 0 => paths :+ cp.copy (windingRule = windingRule, pathStyle = cp.pathStyle.copy (fillRule = Some ("evenodd"), stroke=None))
+        case 1 => paths :+ cp.copy (windingRule = windingRule, pathStyle = cp.pathStyle.copy (fillRule = Some ("nonzero"), stroke =None))
+      }
       case _ => System.err.println("Fill and Stroke Path operator encountered for empty path")
     }
     currentPath=None
@@ -288,7 +300,6 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
 
   @Override @throws[IOException]
   def shadingFill(shadingName: COSName):Unit = {
-    //println("in shading fill")
     subPathComplete()
     currentPath match{
       case Some(cp) => paths=paths :+ cp
@@ -300,7 +311,6 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
   //***** path clipping operators *********//
   @Override @throws[IOException]
   def clip(windingRule:Int):Unit = {
-    //println("in clip")
     subPathComplete()
     currentPath match{
       case Some(cp) => paths=paths :+ cp.copy(windingRule=windingRule,isClip = true)

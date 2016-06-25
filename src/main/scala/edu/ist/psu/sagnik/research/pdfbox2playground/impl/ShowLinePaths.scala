@@ -42,7 +42,7 @@ object ShowLinePaths {
     val lines1=segments1.filter(x=>x.isInstanceOf[PDLine])
     val curves1=segments1.filter(x=>x.isInstanceOf[PDCurve])
 
-   CreateSVG(segments1,"src/test/resources/test-page-5.svg",width=page.getMediaBox.getWidth,height=page.getMediaBox.getHeight,fromScala=true)
+   CreateSVG.fromPath(finder1.paths,"src/test/resources/test-page-5.svg",width=page.getMediaBox.getWidth,height=page.getMediaBox.getHeight)
     println("written SVG paths")
 
     document.close();
