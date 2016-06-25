@@ -25,7 +25,6 @@ libraryDependencies ++= Seq(
   // pdf parsing libraries
   "org.apache.pdfbox"    %  "pdfbox"          %  "2.0.2",
   "org.apache.pdfbox"    %   "pdfbox-tools"   %  "2.0.2",
-
 //"org.apache.tika"      %  "tika-bundle"     %  "1.6",
   // testing
   "org.scalatest"        %% "scalatest"  %  "2.2.4",

@@ -40,7 +40,7 @@ Point2D.Float, controlPoint2: Point2D.Float, ctm: Matrix) extends PDSegment
 //case class PDRect(segments:List[PDLine]) extends PDSubPath
 case class PDShape(segments:List[PDSegment])
 
-case class PDPath(subPaths:List[PDShape],isClip:Boolean,doPaint:Boolean, windingRule:Int)
+case class PDPath(subPaths:List[PDShape],isClip:Boolean,doPaint:Boolean, windingRule:Int,pathStyle:PathStyle)
 
 //this comes from the graphics state
 case class PathStyle(

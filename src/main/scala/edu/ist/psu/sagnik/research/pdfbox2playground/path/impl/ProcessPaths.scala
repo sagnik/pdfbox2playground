@@ -1,5 +1,6 @@
 package edu.ist.psu.sagnik.research.pdfbox2playground.path.impl
 
+import java.awt.Color
 import java.awt.geom.Point2D
 import java.io.IOException
 
@@ -7,8 +8,10 @@ import edu.ist.psu.sagnik.research.pdfbox2playground.path.model._
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine
 import org.apache.pdfbox.cos.COSName
 import org.apache.pdfbox.pdmodel.PDPage
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage
 import org.apache.pdfbox.util.Matrix
+import scala.collection.JavaConverters._
 
 /**
   * Created by schoudhury on 6/22/16.
@@ -26,6 +29,55 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
 
   def fp(p:Point2D):Point2D.Float=new Point2D.Float(p.getX.toFloat,p.getY.toFloat)
 
+  /*
+  case class PathStyle(
+                      fill:Option[String],
+                      fillRule:Option[String],
+                      fillOpacity:Option[String],
+                      stroke:Option[String],
+                      strokeWidth:Option[String],
+                      strokeLineCap:Option[String],
+                      strokeLineJoin:Option[String],
+                      strokeMiterLimit:Option[String],
+                      strokeDashArray:Option[String],
+                      strokeDashOffset:Option[String],
+                      strokeOpacity:Option[String]
+                    )
+
+   */
+
+  //TODO:possible exception?
+  def getHexRGB(color: PDColor):String={
+    val rgb=color.toRGB //this is packed RGB
+    //http://stackoverflow.com/questions/4801366/convert-rgb-values-into-integer-pixel
+    val r = (rgb >> 16) & 0xFF
+    val g = (rgb >> 8) & 0xFF
+    val b = rgb & 0xFF
+
+    f"#${r}%02x${g}%02x${b}%02x"
+  }
+
+  def getPathStyle():PathStyle={
+    //for fill and stroke opacities, the default values are being used, because I don't see a
+    //direct matching to PDF standards. See https://www.w3.org/TR/SVG/painting.html#FillOpacityProperty for
+    //fillRule.
+    PathStyle(
+      fill=Some(getHexRGB(getGraphicsState.getNonStrokingColor)),
+      fillRule=None,
+      fillOpacity=Some("1"),
+      stroke=Some(getHexRGB(getGraphicsState.getStrokingColor)),
+      strokeWidth=Some(getGraphicsState.getLineWidth.toString),
+      strokeLineCap=Some(getGraphicsState.getLineCap.toString),
+      strokeLineJoin=Some(getGraphicsState.getLineJoin.toString),
+      strokeMiterLimit=Some(getGraphicsState.getMiterLimit.toString),
+      strokeDashArray= if (getGraphicsState.getLineDashPattern.getDashArray().length==2)
+        Some(getGraphicsState.getLineDashPattern.getDashArray().toList(0)+", "+getGraphicsState.getLineDashPattern.getDashArray().toList(1))
+        else None,
+      strokeDashOffset=Some(getGraphicsState.getLineDashPattern.getPhase.toString), //TODO:check
+      strokeOpacity=Some("1")
+    )
+
+  }
   //***** path construction operators *********//
 
   //moveTo `m` and rectangle `re` can start a path, or appear inside an existing path
@@ -57,7 +109,8 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
           subPaths = List(csp),
           isClip = false,
           doPaint = true,
-          windingRule = -1
+          windingRule = -1,
+          pathStyle=getPathStyle()
         )
       )
         currentSubPath=None
@@ -81,10 +134,10 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
           subPaths = List.empty[PDShape],
           isClip = false,
           doPaint = true,
-          windingRule = -1
+          windingRule = -1,
+          getPathStyle()
         )
       )
-
     }
 
   }
@@ -198,13 +251,14 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
 
   //***** path painting operators *********//
   //TODO: figure out what to do with different kinds of winding rules and shading patterns
+  //TODO: see page 230 in PDF standards. Many painting commands close the path as well.
 
   @Override @throws[IOException]
   def strokePath():Unit  = {
     //println("in strokepath")
     subPathComplete()
     currentPath match{
-      case Some(cp) => paths=paths :+ cp
+      case Some(cp) => paths=paths :+ cp.copy(pathStyle = cp.pathStyle.copy(fill=None))
       case _ => System.err.println("Stroke Path operator encountered for empty path")
     }
     currentPath=None
