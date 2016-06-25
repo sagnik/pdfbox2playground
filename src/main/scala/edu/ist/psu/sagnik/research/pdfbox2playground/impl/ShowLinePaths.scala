@@ -20,7 +20,7 @@ object ShowLinePaths {
     //val loc="src/test/resources/pdf_reference_1-7.pdf"
     val loc="src/test/resources/test1.pdf"
     val document = PDDocument.load(new File(loc));
-    val page = document.getPage(7)
+    val page = document.getPage(7)//7
     //val page = document.getPage(5)
 
     val finder1=new ProcessPaths(page)
@@ -42,7 +42,7 @@ object ShowLinePaths {
     val lines1=segments1.filter(x=>x.isInstanceOf[PDLine])
     val curves1=segments1.filter(x=>x.isInstanceOf[PDCurve])
 
-   CreateSVG.fromPath(finder1.paths,"src/test/resources/test-page-5.svg",width=page.getMediaBox.getWidth,height=page.getMediaBox.getHeight)
+   CreateSVG.fromPath(finder1.paths,"src/test/resources/test1-page-7.svg",width=page.getMediaBox.getWidth,height=page.getMediaBox.getHeight)
     println("written SVG paths")
 
     document.close();
