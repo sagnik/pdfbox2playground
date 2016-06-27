@@ -69,6 +69,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
     static final int SCALE = 4;
     private Graphics2D g2d;
     private final PDDocument document;
+    private Boolean startOfLine;
 
     /**
      * Instantiate a new PDFTextStripper object.
@@ -185,11 +186,48 @@ public class DrawPrintTextLocations extends PDFTextStripper
 
         String imageFilename = filename;
         int pt = imageFilename.lastIndexOf('.');
-        imageFilename = imageFilename.substring(0, pt) + "-marked-" + (page + 1) + ".png";
+        imageFilename = imageFilename.substring(0, pt) + "-marked-" + (page + 1) + "-1.png";
         ImageIO.write(image, "png", new File(imageFilename));
     }
 
     @Override
+    protected void startPage(PDPage page) throws IOException
+    {
+        startOfLine = true;
+        super.startPage(page);
+    }
+
+    @Override
+    protected void writeLineSeparator() throws IOException
+    {
+        //startOfLine = true;
+        System.out.println("we got a new line");
+        super.writeLineSeparator();
+    }
+
+    @Override
+    protected void writeWordSeparator() throws IOException
+    {
+        //startOfLine = true;
+        System.out.println("we got a new word");
+        super.writeWordSeparator();
+    }
+
+    @Override
+    protected void writeParagraphStart() throws IOException
+    {
+        //startOfLine = true;
+        System.out.println("new paragraph started");
+        super.writeParagraphStart();
+    }
+
+    @Override
+    protected void writeParagraphEnd() throws IOException
+    {
+        //startOfLine = true;
+        System.out.println("last paragraphs ends");
+        super.writeParagraphEnd();
+    }
 
     protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode, Vector displacement) throws IOException
     {
@@ -199,6 +237,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
         // show actual glyph bounds. This must be done here and not in writeString(),
         // because writeString processes only the glyphs with unicode,
         // see e.g. the file in PDFBOX-3274
+
         Shape cyanShape = calculateGlyphBounds(textRenderingMatrix, font, code);
 
         if (cyanShape != null)
@@ -207,7 +246,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
             cyanShape = rotateAT.createTransformedShape(cyanShape);
 
             g2d.setColor(Color.CYAN);
-            g2d.draw(cyanShape);
+            //g2d.draw(cyanShape);
         }
     }
 

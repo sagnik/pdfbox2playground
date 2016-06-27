@@ -62,7 +62,7 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
     PathStyle(
       fill=Some(getHexRGB(getGraphicsState.getNonStrokingColor)),
       fillRule=None,
-      fillOpacity=None,//Some("1"),
+      fillOpacity=None,
       stroke=Some(getHexRGB(getGraphicsState.getStrokingColor)),
       strokeWidth=Some((getGraphicsState.getLineWidth*getGraphicsState.getCurrentTransformationMatrix.getScaleX).toString), //TODO: this is kind of a hack. Need
      //to look more into how scaling affects line width
