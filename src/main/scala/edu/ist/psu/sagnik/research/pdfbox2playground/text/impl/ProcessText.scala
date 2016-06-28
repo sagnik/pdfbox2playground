@@ -24,7 +24,7 @@ class ProcessText extends PDFTextStripper {
   @Override
   @throws[IOException]
   override protected def writeWordSeparator(): Unit = {
-    //println("word: "+currentChars.map(x=>(x.content,Rectangle.asCoordinatesStr(x.bb))))
+    //println("word: "+currentChars.map(x=>(x.content)))
     currentWords=currentWords :+ PDWord(
       content = currentChars.foldLeft("")((a,b)=>a+b.content),
       chars = currentChars,
