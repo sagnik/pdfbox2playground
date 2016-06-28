@@ -12,7 +12,7 @@ import java.awt.Color
 object PrintText {
 
   def main(args:Array[String]):Unit={
-    val loc="src/test/resources/pg_0002.pdf"
+    val loc="src/test/resources/LoremIpsum.pdf"
     var document = PDDocument.load(new File(loc))
     var page = document.getPage(0)
     val pageNum=0
