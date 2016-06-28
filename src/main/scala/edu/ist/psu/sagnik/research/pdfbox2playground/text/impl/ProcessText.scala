@@ -1,98 +1,99 @@
 package edu.ist.psu.sagnik.research.pdfbox2playground.text.impl
 
 import java.io.{ByteArrayOutputStream, IOException, OutputStreamWriter}
+import java.util
 
-import edu.ist.psu.sagnik.research.pdfbox2playground.text.model.{PDParagraph, PDTextLine, PDWord}
-import org.apache.pdfbox.pdmodel.PDPage
+import edu.ist.psu.sagnik.research.pdfbox2playground.model.Rectangle
+import edu.ist.psu.sagnik.research.pdfbox2playground.text.model.{PDChar, PDParagraph, PDTextLine, PDWord}
+import org.apache.pdfbox.pdmodel.{PDDocument, PDPage}
 import org.apache.pdfbox.text.{PDFTextStripper, TextPosition}
 
 import scala.collection.JavaConverters._
+import scala.xml.Document
 
 /**
   * Created by schoudhury on 6/27/16.
   */
 class ProcessText extends PDFTextStripper {
 
-  //var allParagraphs = Seq.empty[PDParagraph]
-  //var currentParagraph: PDParagraph
-  //var currentTextLine: PDTextLine
-  //var currentWord: PDWord
-
-  @Override
-  @throws[IOException]
-  override protected def writeLineSeparator(): Unit = {
-    System.out.println("we got a new line")
-    super.writeLineSeparator()
-  }
+  var currentParagraphs = List.empty[PDParagraph]
+  var currentTextLines=List.empty[PDTextLine]
+  var currentWords=List.empty[PDWord]
+  var currentChars=List.empty[PDChar]
 
   @Override
   @throws[IOException]
   override protected def writeWordSeparator(): Unit = {
-    System.out.println("we got a new word")
+    //println("word: "+currentChars.map(x=>(x.content,Rectangle.asCoordinatesStr(x.bb))))
+    currentWords=currentWords :+ PDWord(
+      content = currentChars.foldLeft("")((a,b)=>a+b.content),
+      chars = currentChars,
+      bb=CalculateBB(currentChars)
+    )
+    //println("word bb: "+CalculateBB(currentChars))
+    currentChars=List.empty[PDChar]
     super.writeWordSeparator()
   }
 
   @Override
   @throws[IOException]
-  override protected def writeParagraphStart(): Unit = {
-    System.out.println("new paragraph started")
-    super.writeParagraphStart()
+  override protected def writeLineSeparator(): Unit = {
+    this.writeWordSeparator()
+    //println("line: "+currentWords.map(a=>(a.bb,a.content)))
+    currentTextLines=currentTextLines :+ PDTextLine(
+      content = currentWords.foldLeft("")((a,b)=>a+b.content+" "),
+      tWords = currentWords,
+      bb=CalculateBB(currentWords)
+    )
+    //println("line bb: "+CalculateBB(currentWords))
+    currentWords=List.empty[PDWord]
+    super.writeLineSeparator()
   }
 
   @Override
   @throws[IOException]
   override protected def writeParagraphEnd(): Unit = {
-    System.out.println("last paragraphs ends")
+    //this.writeLineSeparator()
+    //println("paragraph: "+currentTextLines.map(a=>(a.bb,a.content)))
+    currentParagraphs=currentParagraphs :+ PDParagraph(
+      content = currentTextLines.foldLeft("")((a,b)=>a+b.content+"\n"),
+      tLines = currentTextLines,
+      bb=CalculateBB(currentTextLines)
+    )
+    println("paragraph bb: "+CalculateBB(currentTextLines))
+    currentTextLines=List.empty[PDTextLine]
     super.writeParagraphEnd()
   }
 
   @Override
   @throws[IOException]
-  protected def writeString(s: String, tPs: List[TextPosition]): Unit = {
+  override protected def writeString(s: String, textPositions: util.List[TextPosition]): Unit = {
+    val tPs=textPositions.asScala.toList
+    tPs.foreach(tP=>{
+      currentChars=currentChars :+ PDChar(
+        content = tP.getUnicode,
+        bb = Rectangle(
+          tP.getXDirAdj,
+          (tP.getYDirAdj - tP.getHeightDir),
+          tP.getXDirAdj+tP.getWidthDirAdj,
+          tP.getYDirAdj//(tP.getYDirAdj - tP.getHeightDir)+tP.getHeightDir
+        ),
+        font = tP.getFont
+      )
+    })
+    /*
     tPs.foreach(text => println("String[" + text.getXDirAdj + "," + text.getYDirAdj +
       " fs=" + text.getFontSize + " xscale=" + text.getXScale + " height=" + text.getHeightDir +
       " space=" + text.getWidthOfSpace + " width=" + text.getWidthDirAdj + "]" + text.getUnicode))
+      */
+
   }
 
-  def stripPage(pdPage: PDPage): Unit = {
-    /*
-
-    PDRectangle cropBox = pdPage.getCropBox();
-
-    // flip y-axis
-    flipAT = new AffineTransform();
-    flipAT.translate(0, pdPage.getBBox().getHeight());
-    flipAT.scale(1, -1);
-
-    // page may be rotated
-    rotateAT = new AffineTransform();
-    int rotation = pdPage.getRotation();
-    if (rotation != 0) {
-      PDRectangle mediaBox = pdPage.getMediaBox();
-      switch(rotation) {
-        case 90:
-        rotateAT.translate(mediaBox.getHeight(), 0);
-        break;
-        case 270:
-          rotateAT.translate (0, mediaBox.getWidth());
-        break;
-        case 180:
-          rotateAT.translate (mediaBox.getWidth(), mediaBox.getHeight());
-        break;
-        default:
-          break;
-      }
-      rotateAT.rotate(Math.toRadians(rotation));
-    }
-
-    g2d = image.createGraphics();
-    g2d.setStroke(new BasicStroke(0.1f));
-    g2d.scale(SCALE, SCALE);
-
-    setStartPage(page + 1);
-    setEndPage(page + 1);
-*/
+  def stripPage(pdPageNum: Int, document: PDDocument): List[PDParagraph] = {
+    setStartPage(pdPageNum + 1);
+    setEndPage(pdPageNum + 1);
     val dummyOutput = new OutputStreamWriter(new ByteArrayOutputStream())
     writeText(document, dummyOutput)
+    currentParagraphs
   }
 }

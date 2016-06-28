@@ -13,21 +13,13 @@ import edu.ist.psu.sagnik.research.pdfbox2playground.text.impl.CalculateBB
 
 sealed trait TextSegment{
   def content:String
-  def getBoundingBox:Rectangle
+  def bb:Rectangle
 }
-case class PDChar(content:String,bb:Rectangle,font:PDFont) extends TextSegment{
-  def getBoundingBox=this.bb
-}
+case class PDChar(content:String,bb:Rectangle,font:PDFont) extends TextSegment
 
-case class PDWord(content:String,chars:Seq[PDChar]) extends TextSegment{
-  def getBoundingBox=CalculateBB(this)
-}
+case class PDWord(content:String,bb:Rectangle,chars:List[PDChar]) extends TextSegment
 
-case class PDTextLine(content:String,tWords:Seq[PDWord]) extends TextSegment{
-  def getBoundingBox=CalculateBB(this)
-}
+case class PDTextLine(content:String,bb:Rectangle,tWords:List[PDWord]) extends TextSegment
 
-case class PDParagraph(content:String,tLines:Seq[PDTextLine]) extends TextSegment{
-  def getBoundingBox=CalculateBB(this)
-}
+case class PDParagraph(content:String,bb:Rectangle,tLines:List[PDTextLine]) extends TextSegment
 

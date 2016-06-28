@@ -28,10 +28,10 @@ public class ParsePDPaths {
     }
 
     private static float[] lineBB(Line line){
-        float x1= min(((float) line.getStart().getX()),((float) line.getStart().getX()));
-        float y1= min(((float) line.getStart().getY()),((float) line.getStart().getY()));
-        float x2= max(((float) line.getEnd().getX()), ((float) line.getEnd().getX()));
-        float y2= max(((float) line.getEnd().getY()), ((float) line.getEnd().getY()));
+        float x1= min(((float) line.getStart().getX()),((float) line.getEnd().getX()));
+        float y1= min(((float) line.getStart().getY()),((float) line.getEnd().getY()));
+        float x2= max(((float) line.getStart().getX()), ((float) line.getEnd().getX()));
+        float y2= max(((float) line.getStart().getY()), ((float) line.getEnd().getY()));
         return new float[] {x1,y1,x2,y2};
         //return new java.awt.Rectangle((int) x1, (int) y1, (int) (x2-x1), (int) (y2-y1));
     }
