@@ -21,72 +21,109 @@ class ProcessText extends PDFTextStripper {
   var currentWords=List.empty[PDWord]
   var currentChars=List.empty[PDChar]
 
-  @Override
-  @throws[IOException]
+
+  @Override @throws[IOException]
   override protected def writeWordSeparator(): Unit = {
-    //println("word: "+currentChars.map(x=>(x.content)))
-    currentWords=currentWords :+ PDWord(
-      content = currentChars.foldLeft("")((a,b)=>a+b.content),
-      chars = currentChars,
-      bb=CalculateBB(currentChars)
-    )
-    //println("word bb: "+CalculateBB(currentChars))
-    currentChars=List.empty[PDChar]
-    super.writeWordSeparator()
+    if (!"".equals(currentChars.foldLeft("")((a, b) => a + b.content))) { //do not add an empty word
+      currentWords = CalculateBB(currentChars) match {
+        case Some(bb) =>
+          currentWords :+ PDWord(
+            content = currentChars.foldLeft("")((a, b) => a + b.content),
+            chars = currentChars,
+            bb = bb
+          )
+        case _ => currentWords
+      }
+    }
+    currentChars = List.empty[PDChar]
   }
 
-  @Override
-  @throws[IOException]
+  @Override @throws[IOException]
   override protected def writeLineSeparator(): Unit = {
     this.writeWordSeparator()
-    //println("line: "+currentWords.map(a=>(a.bb,a.content)))
-    currentTextLines=currentTextLines :+ PDTextLine(
-      content = currentWords.foldLeft("")((a,b)=>a+b.content+" "),
-      tWords = currentWords,
-      bb=CalculateBB(currentWords)
-    )
-    //println("line bb: "+CalculateBB(currentWords))
-    currentWords=List.empty[PDWord]
-    super.writeLineSeparator()
+    if (!"".equals(currentWords.foldLeft("")((a, b) => a + b.content + " ").trim)) {
+      currentTextLines = CalculateBB(currentWords) match {
+        case Some(bb) => currentTextLines :+ PDTextLine(
+          content = currentWords.foldLeft("")((a, b) => a + b.content + " "),
+          tWords = currentWords,
+          bb = bb
+        )
+        case _ => currentTextLines
+      }
+    }
+    currentWords = List.empty[PDWord]
   }
 
-  @Override
-  @throws[IOException]
+  @Override @throws[IOException]
   override protected def writeParagraphEnd(): Unit = {
-    //this.writeLineSeparator()
-    //println("paragraph: "+currentTextLines.map(a=>(a.bb,a.content)))
-    currentParagraphs=currentParagraphs :+ PDParagraph(
-      content = currentTextLines.foldLeft("")((a,b)=>a+b.content+"\n"),
-      tLines = currentTextLines,
-      bb=CalculateBB(currentTextLines)
-    )
-    println("paragraph bb: "+CalculateBB(currentTextLines))
-    currentTextLines=List.empty[PDTextLine]
-    super.writeParagraphEnd()
+    if (!"".equals(currentTextLines.foldLeft("")((a, b) => a + b.content + " ").trim)) {
+      currentParagraphs= CalculateBB(currentTextLines) match {
+        case Some(bb)=> currentParagraphs :+ PDParagraph (
+          content = currentTextLines.foldLeft ("") ((a, b) => a + b.content + "\n"),
+          tLines = currentTextLines,
+          bb = bb
+        )
+        case _ => currentParagraphs
+      }
+    }
+    currentTextLines = List.empty[PDTextLine]
   }
 
-  @Override
-  @throws[IOException]
+  protected def wordFromTextPositions(tPs:List[TextPosition]):Option[PDWord]={
+    val chars=tPs.map(x=>PDChar(
+      content=x.getUnicode,
+      bb=TextPositionBB.approximate(x), // we can change it to other functions.
+      font=x.getFont
+    ))
+    if (!"".equals((chars.foldLeft("")((a,b)=>a+b.content)).trim))
+      CalculateBB(chars) match {
+        case Some(bb) => Some (
+          PDWord (
+            content = chars.foldLeft ("") ((a, b) => a + b.content),
+            bb = bb,
+            chars
+          )
+        )
+        case _ => None
+      }
+    else None
+  }
+
+
+  /*@Override @throws[IOException]
   override protected def writeString(s: String, textPositions: util.List[TextPosition]): Unit = {
+    //this has to be done because sometimes the writeLine() method is not calling the writeWords() method at all, especially
+    //when the string has space characters.
     val tPs=textPositions.asScala.toList
     tPs.foreach(tP=>{
-      currentChars=currentChars :+ PDChar(
-        content = tP.getUnicode,
-        bb = Rectangle(
-          tP.getXDirAdj,
-          (tP.getYDirAdj - tP.getHeightDir),
-          tP.getXDirAdj+tP.getWidthDirAdj,
-          tP.getYDirAdj//(tP.getYDirAdj - tP.getHeightDir)+tP.getHeightDir
-        ),
-        font = tP.getFont
-      )
+      if (!" ".equals(tP)){
+        currentChars=currentChars :+ PDChar(
+          content=tP.getUnicode,
+          bb=TextPositionBB.approximate(tP), // we can change it to other functions.
+          font=tP.getFont
+        )
+      }
+      else
+        writeWordSeparator()
     })
-    /*
-    tPs.foreach(text => println("String[" + text.getXDirAdj + "," + text.getYDirAdj +
-      " fs=" + text.getFontSize + " xscale=" + text.getXScale + " height=" + text.getHeightDir +
-      " space=" + text.getWidthOfSpace + " width=" + text.getWidthDirAdj + "]" + text.getUnicode))
-      */
-
+  }
+*/
+  @Override @throws[IOException]
+  override protected def writeString(s: String, textPositions: util.List[TextPosition]): Unit = {
+    //this has to be done because sometimes the writeLine() method is not calling the writeWords() method at all, especially
+    //when the string has space characters.
+    val tPss=textPositions.asScala.toList
+      .foldLeft(List(List.empty[TextPosition])) {
+        (acc, tP) =>
+          if (" ".equals(tP.getUnicode)) acc :+ List.empty[TextPosition]
+          else acc.init :+ (acc.last :+ tP)
+      }
+    //if (tPss.length>1) println(tPss)
+    tPss.init.foreach(tPs=> currentWords= wordFromTextPositions(tPs) match{
+      case Some(w)=>currentWords :+ w
+      case _ => currentWords
+    })
+    tPss.last.foreach(x=>currentChars=currentChars :+ PDChar(x.getUnicode,TextPositionBB.approximate(x),x.getFont))
   }
 
   def stripPage(pdPageNum: Int, document: PDDocument): List[PDParagraph] = {

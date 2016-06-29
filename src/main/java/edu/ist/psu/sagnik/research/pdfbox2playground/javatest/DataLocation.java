@@ -12,8 +12,8 @@ public class DataLocation {
         pdLoc="src/test/resources/pdf_reference_1-7.pdf";
         pdLoc="src/test/resources/pg_0005.pdf";
         pdLoc="src/test/resources/test1-p08.pdf";
-        pdLoc="/home/sagnik/Documents/nitrodocs/Purchase_Order_Nitro_EMEA_USD_July_2015.pdf";
-        pdLoc="/home/sagnik/Documents/nitrodocs/cardholder_statement_of_dispute.pdf";
+        pdLoc="/Users/schoudhury/Documents/Purchase_Order_Nitro_EMEA_USD_July_2015.pdf";
+        pdLoc="/Users/schoudhury/Documents/cardholder_statement_of_dispute.pdf";
         pdPageNumber=0;
     }
 }

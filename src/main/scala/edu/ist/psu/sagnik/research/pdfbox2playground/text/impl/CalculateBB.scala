@@ -8,16 +8,18 @@ import edu.ist.psu.sagnik.research.pdfbox2playground.text.model._
   */
 object CalculateBB {
 
-  def apply(texts:List[TextSegment]):Rectangle=
+  def apply(texts:List[TextSegment]):Option[Rectangle]=
     if (texts.nonEmpty)
-      Rectangle(
-        texts.map(x=>x.bb.x1).min,
-        texts.map(x=>x.bb.y1).min,
-        texts.map(x=>x.bb.x2).max,
-        texts.map(x=>x.bb.y2).max
+      Some(
+        Rectangle(
+          texts.map(x=>x.bb.x1).min,
+          texts.map(x=>x.bb.y1).min,
+          texts.map(x=>x.bb.x2).max,
+          texts.map(x=>x.bb.y2).max
+        )
       )
     else
-      Rectangle(0f,0f,0f,0f)
+      None
 
 
 }

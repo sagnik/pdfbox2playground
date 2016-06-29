@@ -102,12 +102,14 @@ public class DrawPrintTextLocations extends PDFTextStripper
             PDDocument document = null;
             try
             {
-                document = PDDocument.load(new File(args[0]));
-
-                DrawPrintTextLocations stripper = new DrawPrintTextLocations(document, args[0]);
+                //document = PDDocument.load(new File(args[0]));
+                document = PDDocument.load(new File(new DataLocation().pdLoc));
+                DrawPrintTextLocations stripper = new DrawPrintTextLocations(document, new DataLocation().pdLoc);
                 stripper.setSortByPosition(true);
 
-                for (int page = 0; page < document.getNumberOfPages(); ++page)
+                int limit=document.getNumberOfPages();
+                limit=1; //for test
+                for (int page = 0; page < limit; ++page)
                 {
                     stripper.stripPage(page);
                 }
@@ -186,7 +188,8 @@ public class DrawPrintTextLocations extends PDFTextStripper
 
         String imageFilename = filename;
         int pt = imageFilename.lastIndexOf('.');
-        imageFilename = imageFilename.substring(0, pt) + "-marked-" + (page + 1) + "-1.png";
+        imageFilename = imageFilename.substring(0, pt) + "-marked-" + (page + 1) + "-3.png";
+        System.out.println(imageFilename);
         ImageIO.write(image, "png", new File(imageFilename));
     }
 
@@ -260,6 +263,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
         {
             PDType3Font t3Font = (PDType3Font) font;
             PDType3CharProc charProc = t3Font.getCharProc(code);
+
             if (charProc != null)
             {
                 PDRectangle glyphBBox = charProc.getGlyphBBox();
@@ -321,38 +325,29 @@ public class DrawPrintTextLocations extends PDFTextStripper
     {
         for (TextPosition text : textPositions)
         {
-            /*
-            if (text.getUnicode().length()>1){
-                System.out.println(text.getUnicode());
-            }
-            */
+            // in red:
+            // show rectangles with the "height" (not a real height, but used for text extraction
+            // heuristics, it is 1/2 of the bounding box height and starts at y=0)
+
 
             Rectangle2D.Float rect = new Rectangle2D.Float(
                     text.getXDirAdj(),
-                    (text.getYDirAdj()),// - text.getHeightDir()),
+                    (text.getYDirAdj()-text.getHeightDir()),
                     text.getWidthDirAdj(),
                     text.getHeightDir());
+
+            if (" ".equals(text.getUnicode()))
+                this.writeWordSeparator();
 
             System.out.println("String[" + text.getXDirAdj() + ","
                     + text.getYDirAdj() + " fs=" + text.getFontSize() + " xscale="
                     + text.getXScale() + " height=" + text.getHeightDir() + " space="
                     + text.getWidthOfSpace() + " width="
                     + text.getWidthDirAdj() + " rotation: "
-                    + text.getDir()+ " bb: {"
-                    +rect.getBounds2D()+"}"
+                    + text.getDir()
                     +"]" + text.getUnicode());
 
-            // in red:
-            // show rectangles with the "height" (not a real height, but used for text extraction
-            // heuristics, it is 1/2 of the bounding box height and starts at y=0)
 
-/*
-            Rectangle2D.Float rect = new Rectangle2D.Float(
-                    text.getXDirAdj(),
-                    (text.getYDirAdj() - text.getHeightDir()),
-                    text.getWidthDirAdj(),
-                    text.getHeightDir());
-*/
 
             g2d.setColor(Color.red);
             g2d.draw(rect);
