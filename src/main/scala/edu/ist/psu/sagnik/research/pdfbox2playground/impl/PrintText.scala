@@ -13,7 +13,7 @@ object PrintText {
 
   def main(args:Array[String]):Unit={
     //val loc="src/test/resources/test1-p08.pdf"
-    val loc="/Users/schoudhury/Documents/cardholder_statement_of_dispute.pdf"
+    val loc="/home/sagnik/Documents/nitrodocs/cardholder_statement_of_dispute.pdf"
     var document = PDDocument.load(new File(loc))
     val pageNum=0
     var page = document.getPage(pageNum)
