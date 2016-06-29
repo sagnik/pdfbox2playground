@@ -30,12 +30,12 @@ paint the path or to use it as a clipping boundary.
 trait PDSegment{
   def startPoint:Point2D.Float
   def endPoint:Point2D.Float
-  def ctm: Matrix
+  def bb:Rectangle
 }
 
-case class PDLine(startPoint:Point2D.Float,endPoint:Point2D.Float, ctm: Matrix) extends PDSegment
+case class PDLine(startPoint:Point2D.Float,endPoint:Point2D.Float,bb:Rectangle) extends PDSegment
 case class PDCurve(startPoint:Point2D.Float,endPoint:Point2D.Float, controlPoint1:
-Point2D.Float, controlPoint2: Point2D.Float, ctm: Matrix) extends PDSegment
+Point2D.Float, controlPoint2: Point2D.Float,bb:Rectangle) extends PDSegment
 
 //case class PDRect(segments:List[PDLine]) extends PDSubPath
 case class PDShape(segments:List[PDSegment])

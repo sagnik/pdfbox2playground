@@ -11,7 +11,8 @@ public class DataLocation {
     DataLocation(){
         pdLoc="src/test/resources/pdf_reference_1-7.pdf";
         pdLoc="src/test/resources/pg_0005.pdf";
-        pdLoc="src/test/resources/test1.pdf";
-        pdPageNumber=7;
+        //pdLoc="src/test/resources/test1-p08.pdf";
+        pdLoc="/Users/schoudhury/Documents/Purchase_Order_Nitro_EMEA_USD_July_2015.pdf";
+        pdPageNumber=0;
     }
 }

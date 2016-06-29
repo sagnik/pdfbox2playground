@@ -87,14 +87,22 @@ public class ParsePDPaths {
         ArrayList<float[]> bbs= new ArrayList<>();
         for (Path p:finder.paths){
             for (SubPath sp: p.subPaths){
-                if (sp instanceof Rectangle)
+                if (sp instanceof Rectangle){
                     rectangles+=1;
+                    Rectangle r = (Rectangle) sp;
+                    PDPageContentStream content= new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND,false);
+                    drawRect(content, Color.BLUE, r.getAwtRectangle(), false);
+                    content.close();
+                }
                 else {
                     for (Segment s : sp.segments) {
                         if (s instanceof Line) {
                             linePaths += 1;
                             Line l=(Line) s;
-                            bbs.add(lineBB(l));
+                            PDPageContentStream content= new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND,false);
+                            drawRect(content, Color.BLUE, getAwtRectangleFromArray(lineBB(l)), false);
+                            content.close();
+                            //bbs.add(lineBB(l));
                             //System.out.println("Got a line, "+l.toString());
                         } else if (s instanceof Curve) {
                             curvePaths += 1;
@@ -115,11 +123,20 @@ public class ParsePDPaths {
         drawRect(content, Color.BLUE, wholeBB, false);
         content.close();
 
-        document.save(loc.substring(0,loc.length()-4)+"-rect.pdf");
+        document.save(loc.substring(0,loc.length()-4)+"-page-"+new DataLocation().pdPageNumber+"-rect.pdf");
         document.close();
 
         System.out.println(linePaths+" "+curvePaths+" "+rectangles);
 
+    }
+
+    private static java.awt.Rectangle getAwtRectangleFromArray(float[] cords) {
+        return new java.awt.Rectangle(
+                (int) cords[0],
+                (int) cords[1],
+                (int) (cords[2]-cords[0]),
+                (int) (cords[3]-cords[1])
+        );
     }
 
     private static java.awt.Rectangle getWholeBB(ArrayList<float[]> bbs) {

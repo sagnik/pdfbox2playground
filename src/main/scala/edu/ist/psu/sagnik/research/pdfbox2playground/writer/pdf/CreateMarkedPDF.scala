@@ -32,11 +32,33 @@ object CreateMarkedPDF {
     }
   }
 
-  def apply(docLoc:String,document:PDDocument,page:PDPage,bbs:List[Rectangle],color:Color,tElemType:String):Unit={
+  @throws[IOException]
+  private def drawRect(content: PDPageContentStream, color: Color, rect: Rectangle, fill: Boolean) {
+    /*
+    (x1,y1) -----------                    --------------   (x2,y2)
+           |           |                   |             |
+           |           |              =>   |             |
+           |           |                   |             |
+           ------------ (x2,y2)  (x1,y1)   --------------
+     */
+    content.addRect(rect.x1, (rect.y1), (rect.x2-rect.x1), (rect.y2-rect.y1))
+    if (fill) {
+      content.setNonStrokingColor(color)
+      content.fill
+    }
+    else {
+      content.setStrokingColor(color)
+      content.stroke
+    }
+  }
+
+  def apply(docLoc:String,document:PDDocument,pageNum:Int,page:PDPage,bbs:List[Rectangle],color:Color,tElemType:String):Unit={
     val content: PDPageContentStream = new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, false)
-    bbs.foreach(bb=>drawRect(content,color,bb, page.getBBox.getHeight,false))
+    if (("paths").equals(tElemType)) bbs.foreach (bb => drawRect (content, color, bb, false))
+      else bbs.foreach (bb => drawRect (content, color, bb, page.getBBox.getHeight, false))
+
     content.close
-    document.save(docLoc.substring(0, docLoc.length - 4) + "-"+tElemType+".pdf")
+    document.save(docLoc.substring(0, docLoc.length - 4) + "-page-"+pageNum+"-"+tElemType+".pdf")
   }
 
 }

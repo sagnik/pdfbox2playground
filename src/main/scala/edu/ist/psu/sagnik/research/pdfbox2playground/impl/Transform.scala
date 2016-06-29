@@ -10,7 +10,9 @@ import org.apache.pdfbox.util.Matrix
   */
 
 //see page 208 in PDF spec 1.7
+
 object Transform {
+  /*
   def apply(pds:PDSegment):PDSegment= {
     val a=pds.ctm.getValue(0,0)
     val b=pds.ctm.getValue(0,1)
@@ -34,5 +36,5 @@ object Transform {
       )
     }
   }
-
+*/
 }

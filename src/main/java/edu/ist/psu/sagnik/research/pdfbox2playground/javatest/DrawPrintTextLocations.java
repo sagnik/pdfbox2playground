@@ -327,21 +327,33 @@ public class DrawPrintTextLocations extends PDFTextStripper
             }
             */
 
+            Rectangle2D.Float rect = new Rectangle2D.Float(
+                    text.getXDirAdj(),
+                    (text.getYDirAdj()),// - text.getHeightDir()),
+                    text.getWidthDirAdj(),
+                    text.getHeightDir());
+
             System.out.println("String[" + text.getXDirAdj() + ","
                     + text.getYDirAdj() + " fs=" + text.getFontSize() + " xscale="
                     + text.getXScale() + " height=" + text.getHeightDir() + " space="
                     + text.getWidthOfSpace() + " width="
-                    + text.getWidthDirAdj() + "]" + text.getUnicode());
+                    + text.getWidthDirAdj() + " rotation: "
+                    + text.getDir()+ " bb: {"
+                    +rect.getBounds2D()+"}"
+                    +"]" + text.getUnicode());
 
             // in red:
             // show rectangles with the "height" (not a real height, but used for text extraction
             // heuristics, it is 1/2 of the bounding box height and starts at y=0)
 
+/*
             Rectangle2D.Float rect = new Rectangle2D.Float(
                     text.getXDirAdj(),
                     (text.getYDirAdj() - text.getHeightDir()),
                     text.getWidthDirAdj(),
                     text.getHeightDir());
+*/
+
             g2d.setColor(Color.red);
             g2d.draw(rect);
 
@@ -372,7 +384,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
 
             s = flipAT.createTransformedShape(s);
             s = rotateAT.createTransformedShape(s);
-
+            System.out.println(s.getBounds2D());
             g2d.setColor(Color.blue);
             //g2d.draw(s);
         }

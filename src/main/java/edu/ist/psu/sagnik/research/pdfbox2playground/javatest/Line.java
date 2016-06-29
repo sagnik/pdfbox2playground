@@ -15,6 +15,7 @@ public class Line extends Segment {
     //
     // Object override
     //
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

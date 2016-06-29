@@ -12,26 +12,28 @@ import java.awt.Color
 object PrintText {
 
   def main(args:Array[String]):Unit={
-    val loc="src/test/resources/test1-p08.pdf"
+    //val loc="src/test/resources/test1-p08.pdf"
+    val loc="/Users/schoudhury/Documents/cardholder_statement_of_dispute.pdf"
     var document = PDDocument.load(new File(loc))
-    var page = document.getPage(0)
     val pageNum=0
+    var page = document.getPage(pageNum)
     val paragraphs=new ProcessText().stripPage(pageNum,document)
     //paragraphs.foreach(x=>println(s"content: ${x.content} bb: ${x.bb}"))
     //paragraphs.flatMap(_.tLines).flatMap(_.tWords).flatMap(_.chars).foreach(println)
-    CreateMarkedPDF(loc,document,page,paragraphs.flatMap(_.tLines).flatMap(_.tWords).flatMap(_.chars).map(_.bb),Color.BLUE,"chars")
+    //TODO: check for comprehensions.
+    CreateMarkedPDF(loc,document,pageNum,page,paragraphs.flatMap(_.tLines).flatMap(_.tWords).flatMap(_.chars).map(_.bb),Color.BLUE,"chars")
     println("created char marked PDF")
     document = PDDocument.load(new File(loc))
     page = document.getPage(0)
-    CreateMarkedPDF(loc,document,page,paragraphs.flatMap(_.tLines).flatMap(_.tWords).map(_.bb),Color.GREEN,"words")
+    CreateMarkedPDF(loc,document,pageNum,page,paragraphs.flatMap(_.tLines).flatMap(_.tWords).map(_.bb),Color.GREEN,"words")
     println("created word marked PDF")
     document = PDDocument.load(new File(loc))
     page = document.getPage(0)
-    CreateMarkedPDF(loc,document,page,paragraphs.flatMap(_.tLines).map(_.bb),Color.RED,"lines")
+    CreateMarkedPDF(loc,document,pageNum,page,paragraphs.flatMap(_.tLines).map(_.bb),Color.RED,"lines")
     println("created line marked PDF")
     document = PDDocument.load(new File(loc))
     page = document.getPage(0)
-    CreateMarkedPDF(loc,document,page,paragraphs.map(_.bb),Color.CYAN,"paragraphs")
+    CreateMarkedPDF(loc,document,pageNum,page,paragraphs.map(_.bb),Color.CYAN,"paragraphs")
     println("created paragraph marked PDF")
   }
 }
