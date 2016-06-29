@@ -1,7 +1,7 @@
 package edu.ist.psu.sagnik.research.pdfbox2playground.path.impl
 
 import java.awt.Color
-import java.awt.geom.Point2D
+import java.awt.geom.{Area, Point2D}
 import java.io.IOException
 
 import edu.ist.psu.sagnik.research.pdfbox2playground.path.model._
@@ -14,14 +14,15 @@ import org.apache.pdfbox.util.Matrix
 import scala.collection.JavaConverters._
 
 /**
-  * Created by schoudhury on 6/22/16.
-  */
+ * Created by schoudhury on 6/22/16.
+ */
 class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
 
   var paths:List[PDPath]=List.empty[PDPath]
   var currentPath:Option[PDPath]=None
   var currentSubPath:Option[PDShape]=None
   var currentPoint=new Point2D.Float(0f,0f)
+  var lastClipPath:Option[Area]=None
 
   def getCTM:Matrix = this.getGraphicsState.getCurrentTransformationMatrix
 
@@ -29,48 +30,6 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
 
   def fp(p:Point2D):Point2D.Float=new Point2D.Float(p.getX.toFloat,p.getY.toFloat)
 
-  //TODO:possible exception?
-  def getHexRGB(color: PDColor):String={
-    val rgb=color.toRGB //this is packed RGB
-    //http://stackoverflow.com/questions/4801366/convert-rgb-values-into-integer-pixel
-    val r = (rgb >> 16) & 0xFF
-    val g = (rgb >> 8) & 0xFF
-    val b = rgb & 0xFF
-
-    f"#${r}%02x${g}%02x${b}%02x"
-  }
-
-  def getPathStyle():PathStyle={
-    //See https://www.w3.org/TR/SVG/painting.html#FillOpacityProperty for fillRule.
-    PathStyle(
-      fill=Some(getHexRGB(getGraphicsState.getNonStrokingColor)),
-      fillRule=None,
-      fillOpacity=None,
-      stroke=Some(getHexRGB(getGraphicsState.getStrokingColor)),
-      strokeWidth=Some((getGraphicsState.getLineWidth*getGraphicsState.getCurrentTransformationMatrix.getScaleX).toString), //TODO: this is kind of a hack. Need
-     //to look more into how scaling affects line width
-      strokeLineCap=getGraphicsState.getLineCap match{
-        case 0 => Some("butt")
-        case 1 => Some("round")
-        case 2 => Some("square")
-        case _ => None
-      },
-      strokeLineJoin=getGraphicsState.getLineJoin match{
-        case 0 => Some("miter")
-        case 1 => Some("round")
-        case 2 => Some("bevel")
-        case _ => None
-      },
-
-      strokeMiterLimit=Some(getGraphicsState.getMiterLimit.toString),
-      strokeDashArray= if (getGraphicsState.getLineDashPattern.getDashArray().length==2)
-        Some(getGraphicsState.getLineDashPattern.getDashArray().toList(0)+", "+getGraphicsState.getLineDashPattern.getDashArray().toList(1))
-        else None,
-      strokeDashOffset=Some(getGraphicsState.getLineDashPattern.getPhase.toString), //TODO:check
-      strokeOpacity=None
-    )
-
-  }
   //***** path construction operators *********//
 
   //moveTo `m` and rectangle `re` can start a path, or appear inside an existing path
@@ -103,7 +62,7 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
           isClip = false,
           doPaint = true,
           windingRule = -1,
-          pathStyle=getPathStyle()
+          pathStyle=CreatePathStyle(getGraphicsState)
         )
       )
         currentSubPath=None
@@ -115,10 +74,8 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
 
   @Override @throws[IOException]
   def moveTo(x: Float, y: Float):Unit={
-    //numMoves+=1
-    //subPathComplete()
     currentPoint = new Point2D.Float(x,y)
-    //we will not create a subpath here. Just a path. Because move will actually not do anything than to
+    //we will not create a subpath here. Just a path. Because move will actually not do anything other than to
     // start a path and change the current point
     currentPath match{
       case Some (cp) => currentPath = Some(cp)
@@ -128,7 +85,7 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
           isClip = false,
           doPaint = true,
           windingRule = -1,
-          getPathStyle()
+          CreatePathStyle(getGraphicsState)
         )
       )
     }
@@ -141,7 +98,6 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
 
   @Override @throws[IOException]
   def lineTo(x: Float, y: Float):Unit= {
-    //numLines+=1
     currentSubPath match{
       case Some(csp) => currentSubPath = Some(
         csp.copy(
@@ -162,7 +118,6 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
 
   @Override @throws[IOException]
   def curveTo(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float):Unit={
-    //numCurves+=1
     currentSubPath match{
       case Some(csp) => currentSubPath = Some(
         csp.copy(
@@ -201,8 +156,6 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
   //TODO: Handle case where currentSubPath.segments is empty
   @Override @throws[IOException]
   def closePath():Unit = {
-    //numClosePaths+=1
-    //println("in close path")
     currentSubPath match{
       case Some(csp) => {
         val startPoint = csp.segments.head.startPoint
@@ -241,7 +194,7 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
 
   @Override @throws[IOException]
   //TODO: Revisit, this might be important from the clipping perspective
-  def endPath():Unit= {currentSubPath=None; currentPath = None}
+  def endPath():Unit= {currentSubPath=None; currentPath = None;}
 
   //***** path painting operators *********//
   //TODO: figure out what to do with different kinds of winding rules and shading patterns
@@ -250,68 +203,69 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
   @Override @throws[IOException]
   def strokePath():Unit  = {
     subPathComplete()
-//    currentPath match{
-//      case Some (csp) => println(csp.subPaths.length)
-//      case _ => println("Nope")
-//    }
-    currentPath match{
-      case Some(cp) => paths=paths :+ cp.copy(pathStyle = cp.pathStyle.copy(fill=None),doPaint = true)
-      case _ => System.err.println("Stroke Path operator encountered for empty path")
-    }
+    if (CheckClipping.inSideClip(currentPath,getGraphicsState.getCurrentClippingPath))
+      currentPath match{
+        case Some(cp) => paths=paths :+ cp.copy(pathStyle = cp.pathStyle.copy(fill=None),doPaint = true)
+        case _ => System.err.println("Stroke Path operator encountered for empty path")
+      }
+    else
+      System.err.println(s"Path outside current clipping path, rejecting")
     currentPath=None
   }
 
   @Override @throws[IOException]
   def fillPath(windingRule:Int):Unit = {
-    //println(currentSubPath)
-/*
-    currentPath match{
-      case Some (csp) => println(csp.subPaths)
-      case _ => println("Nope")
-    }
-*/
     subPathComplete()
-    currentPath match{
-      case Some(cp) => paths= windingRule match {
-        case 0 => paths :+ cp.copy (windingRule = windingRule,
-          pathStyle = cp.pathStyle.copy (fillRule = Some ("evenodd"), stroke=None),
-          doPaint = true
-        )
-        case 1 => paths :+ cp.copy (windingRule = windingRule,
-          pathStyle = cp.pathStyle.copy (fillRule = Some ("nonzero"), stroke =None),
-          doPaint=true)
+    if (CheckClipping.inSideClip(currentPath,getGraphicsState.getCurrentClippingPath))
+      currentPath match{
+        case Some(cp) => paths= windingRule match {
+          case 0 => paths :+ cp.copy (windingRule = windingRule,
+            pathStyle = cp.pathStyle.copy (fillRule = Some ("evenodd"), stroke=None),
+            doPaint = true
+          )
+          case 1 => paths :+ cp.copy (windingRule = windingRule,
+            pathStyle = cp.pathStyle.copy (fillRule = Some ("nonzero"), stroke =None),
+            doPaint=true)
+        }
+        case _ => System.err.println("Fill Path operator encountered for empty path")
       }
-      case _ => System.err.println("Fill Path operator encountered for empty path")
-    }
+    else
+      System.err.println(s"Path outside current clipping path, rejecting")
     currentPath=None
   }
 
   @Override @throws[IOException]
   def fillAndStrokePath(windingRule:Int):Unit = {
     subPathComplete()
-    currentPath match{
-      case Some(cp) => paths= windingRule match {
-        case 0 => paths :+ cp.copy (windingRule = windingRule,
-          pathStyle = cp.pathStyle.copy (fillRule = Some ("evenodd"),stroke=None),
-          doPaint = true
-        )
-        case 1 => paths :+ cp.copy (windingRule = windingRule,
-          pathStyle = cp.pathStyle.copy (fillRule = Some ("nonzero"), stroke =None),
-          doPaint = true
-        )
+    if (CheckClipping.inSideClip(currentPath,getGraphicsState.getCurrentClippingPath))
+      currentPath match{
+        case Some(cp) => paths= windingRule match {
+          case 0 => paths :+ cp.copy (windingRule = windingRule,
+            pathStyle = cp.pathStyle.copy (fillRule = Some ("evenodd"),stroke=None),
+            doPaint = true
+          )
+          case 1 => paths :+ cp.copy (windingRule = windingRule,
+            pathStyle = cp.pathStyle.copy (fillRule = Some ("nonzero"), stroke =None),
+            doPaint = true
+          )
+        }
+        case _ => System.err.println("Fill and Stroke Path operator encountered for empty path")
       }
-      case _ => System.err.println("Fill and Stroke Path operator encountered for empty path")
-    }
+    else
+      System.err.println(s"Path outside current clipping path, rejecting")
     currentPath=None
   }
 
   @Override @throws[IOException]
   def shadingFill(shadingName: COSName):Unit = {
     subPathComplete()
-    currentPath match{
-      case Some(cp) => paths=paths :+ cp
-      case _ => System.err.println("Shading Fill Path operator encountered for empty path")
-    }
+    if (CheckClipping.inSideClip(currentPath,getGraphicsState.getCurrentClippingPath))
+      currentPath match{
+        case Some(cp) => paths=paths :+ cp
+        case _ => System.err.println("Shading Fill Path operator encountered for empty path")
+      }
+    else
+      System.err.println(s"Path outside current clipping path, rejecting")
     currentPath=None
   }
 
@@ -319,6 +273,8 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
   @Override @throws[IOException]
   def clip(windingRule:Int):Unit = {
     subPathComplete()
+    //println(s"clip path changed? ${lastClipPath.getOrElse(new Area()).equals(getGraphicsState.getCurrentClippingPath)}")
+    //lastClipPath=Some(getGraphicsState.getCurrentClippingPath)
     currentPath match{
       case Some(cp) => paths=paths :+ cp.copy(windingRule=windingRule,isClip = true, doPaint = false)
       case _ => System.err.println("Clip path operator encountered for empty path")
