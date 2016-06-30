@@ -25,7 +25,7 @@ object CreatePathStyle {
     PathStyle(
       fill=Some(getHexRGB(gs.getNonStrokingColor)),
       fillRule=None,
-      fillOpacity=None,
+      fillOpacity=None, //TODO: we don't know what to do here, will use default value (1) while printing
       stroke=Some(getHexRGB(gs.getStrokingColor)),
       strokeWidth=Some((gs.getLineWidth*gs.getCurrentTransformationMatrix.getScaleX).toString), //TODO: this is kind of a hack. Need
       //to look more into how scaling affects line width

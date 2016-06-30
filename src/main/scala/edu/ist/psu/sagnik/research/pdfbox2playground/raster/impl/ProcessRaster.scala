@@ -1,7 +1,10 @@
 package edu.ist.psu.sagnik.research.pdfbox2playground.raster.impl
 
 import java.awt.geom.Point2D
-import java.io.IOException
+import java.awt.image.BufferedImage
+import java.io.{ByteArrayOutputStream, IOException}
+import javax.imageio.ImageIO
+import javax.xml.bind.DatatypeConverter
 
 import edu.ist.psu.sagnik.research.pdfbox2playground.model.Rectangle
 import edu.ist.psu.sagnik.research.pdfbox2playground.raster.model.PDRasterImage
@@ -57,10 +60,19 @@ class ProcessRaster(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
   @Override @throws[IOException]
   def shadingFill(shadingName: COSName)={}
 
+  //see http://www.mkyong.com/java/how-to-convert-bufferedimage-to-byte-in-java/
+
+  def getByteArray(img:BufferedImage):Array[Byte]={
+    val b=new ByteArrayOutputStream()
+    ImageIO.write(img,"png",b)
+    b.toByteArray
+  }
+
   @Override @throws[IOException]
   def drawImage(pdImage: PDImage):Unit=pdImage match{
     case pdImage:PDImageXObject => rasterImages=rasterImages :+ PDRasterImage(
     image=pdImage.getImage,
+      imageDataString=DatatypeConverter.printBase64Binary(getByteArray(pdImage.getImage)),
     bb=Rectangle(
       getCTM.getTranslateX,
       getCTM.getTranslateY,
