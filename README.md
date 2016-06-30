@@ -4,7 +4,7 @@
 ###Goal: 
 ----------
 
-Produce a simplified flat representation of a PDF: A collection of graphics paths, images and text. Text is a hierarchical sequence of pages where each page is a collection of paragraph -> lines -> words -> character. Each class has a bounding box defined in the `user space`.
+Produce a simplified flat representation of a PDF: A sequence of pages where each page is a collection of three objects: graphics paths, images and text. A text object is a _hierarchical_ collection of four objects: paragraph -> line -> word -> character. Each object has a bounding box defined in the `user space`.
 
 ------------
 
