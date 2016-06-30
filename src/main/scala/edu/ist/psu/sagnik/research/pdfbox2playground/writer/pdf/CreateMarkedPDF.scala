@@ -55,6 +55,7 @@ object CreateMarkedPDF {
   def apply(docLoc:String,document:PDDocument,pageNum:Int,page:PDPage,bbs:List[Rectangle],color:Color,tElemType:String):Unit={
     val content: PDPageContentStream = new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, false)
     if (("paths").equals(tElemType)) bbs.foreach (bb => drawRect (content, color, bb, false))
+      else if (("rasters").equals(tElemType)) bbs.foreach (bb => drawRect (content, color, bb, false))
       else bbs.foreach (bb => drawRect (content, color, bb, page.getBBox.getHeight, false))
 
     content.close

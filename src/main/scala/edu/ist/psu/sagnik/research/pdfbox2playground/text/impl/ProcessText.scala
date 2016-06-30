@@ -124,7 +124,7 @@ class ProcessText extends PDFTextStripper {
       case Some(w)=>currentWords :+ w
       case _ => currentWords
     })
-    tPss.last.foreach(x=>currentChars=currentChars :+ PDChar(x.getUnicode,TextPositionBB.approximate(x),x.getFont))
+    tPss.last.foreach(x=>currentChars=currentChars :+ PDChar(x.getUnicode,TextPositionBB.approximate(x),x.getFont.getName,x.getFontSize))
   }
 
   def stripPage(pdPageNum: Int, document: PDDocument): List[PDParagraph] = {

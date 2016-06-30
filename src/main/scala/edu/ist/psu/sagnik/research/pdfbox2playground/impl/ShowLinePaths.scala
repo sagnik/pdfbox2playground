@@ -21,8 +21,8 @@ object ShowLinePaths {
 
   def main(args: Array[String]):Unit={
     //val loc="src/test/resources/test1-p08.pdf"
-    //val loc="/home/sagnik/Documents/nitrodocs/Purchase_Order_Nitro_EMEA_USD_July_2015.pdf"
-    val loc="/home/sagnik/Documents/nitrodocs/cardholder_statement_of_dispute.pdf"
+    val loc="/home/sagnik/Documents/nitrodocs/Purchase_Order_Nitro_EMEA_USD_July_2015.pdf"
+    //val loc="/home/sagnik/Documents/nitrodocs/cardholder_statement_of_dispute.pdf"
 
     val document = PDDocument.load(new File(loc));
     val pageNo=0
