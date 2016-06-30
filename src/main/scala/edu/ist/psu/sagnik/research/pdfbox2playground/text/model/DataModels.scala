@@ -9,13 +9,14 @@ import edu.ist.psu.sagnik.research.pdfbox2playground.text.impl.CalculateBB
   */
 //why not PDChar.content is a String and not a char? PDChar is created by overriding the writeText method
 //of the TextStripper, which processes the TextPosition object. TextPosition might
-//contain String instead of chars.
+//contain a `string` instead of a char.
 
-sealed trait TextSegment{
-  def content:String
-  def bb:Rectangle
+sealed trait TextSegment {
+  def content: String
+  def bb: Rectangle
 }
-case class PDChar(content:String,bb:Rectangle,font:PDFont) extends TextSegment
+
+case class PDChar(content:String,bb:Rectangle, fontName:String, fontSize:Float) extends TextSegment
 
 case class PDWord(content:String,bb:Rectangle,chars:List[PDChar]) extends TextSegment
 

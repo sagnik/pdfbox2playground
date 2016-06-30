@@ -12,8 +12,8 @@ import java.awt.Color
 object PrintText {
 
   def main(args:Array[String]):Unit={
-    //val loc="src/test/resources/test1-p08.pdf"
-    val loc="/Users/schoudhury/Documents/pdf_structure-one_page.pdf"
+    val loc="src/test/resources/LoremIpsum.pdf"
+    //val loc="/Users/schoudhury/Documents/pdf_structure-one_page.pdf"
     var document = PDDocument.load(new File(loc))
     val pageNum=0
     var page = document.getPage(pageNum)
@@ -34,6 +34,7 @@ object PrintText {
     page = document.getPage(0)
     CreateMarkedPDF(loc,document,pageNum,page,paragraphs.flatMap(_.tLines).map(_.bb),Color.RED,"lines")
     println("created line marked PDF")
+
     document = PDDocument.load(new File(loc))
     page = document.getPage(0)
     CreateMarkedPDF(loc,document,pageNum,page,paragraphs.map(_.bb),Color.CYAN,"paragraphs")

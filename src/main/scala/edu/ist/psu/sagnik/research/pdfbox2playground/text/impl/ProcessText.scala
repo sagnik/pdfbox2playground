@@ -72,8 +72,9 @@ class ProcessText extends PDFTextStripper {
   protected def wordFromTextPositions(tPs:List[TextPosition]):Option[PDWord]={
     val chars=tPs.map(x=>PDChar(
       content=x.getUnicode,
-      bb=TextPositionBB.approximate(x), // we can change it to other functions.
-      font=x.getFont
+      bb=TextPositionBB.approximate(x), // we can change it to other functions. See org.apache.pdfbox.examples.util.DrawPrintTextLocations
+      fontName=x.getFont.getName,
+      fontSize = x.getFontSizeInPt
     ))
     if (!"".equals((chars.foldLeft("")((a,b)=>a+b.content)).trim))
       CalculateBB(chars) match {
