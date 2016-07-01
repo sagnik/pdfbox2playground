@@ -15,7 +15,7 @@ import scala.xml.Document
 /**
   * Created by schoudhury on 6/27/16.
   */
-class ProcessText extends PDFTextStripper {
+class ProcessText(page:PDPage) extends PDFTextStripper {
 
   var currentParagraphs = List.empty[PDParagraph]
   var currentTextLines=List.empty[PDTextLine]
@@ -75,6 +75,7 @@ class ProcessText extends PDFTextStripper {
       PDChar(
         content=x.getUnicode,
         bb=TextPositionBB.approximate(x), // we can change it to other functions. See org.apache.pdfbox.examples.util.DrawPrintTextLocations
+        glyphBB=TextPositionBB.glyphBased(x,page),
         style=CreateTextStyle(x,getGraphicsState)
       )
     )
@@ -128,8 +129,9 @@ class ProcessText extends PDFTextStripper {
     })
     tPss.last.foreach(x=>currentChars=currentChars :+
       PDChar(
-        x.getUnicode,
-        TextPositionBB.approximate(x),
+        content=x.getUnicode,
+        bb=TextPositionBB.approximate(x),
+        glyphBB=TextPositionBB.glyphBased(x,page),
         CreateTextStyle(x,getGraphicsState)
       )
     )

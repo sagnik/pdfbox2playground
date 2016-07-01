@@ -3,6 +3,7 @@ package edu.ist.psu.sagnik.research.pdfbox2playground.text.model
 import edu.ist.psu.sagnik.research.pdfbox2playground.model.Rectangle
 import org.apache.pdfbox.pdmodel.font.PDFont
 import edu.ist.psu.sagnik.research.pdfbox2playground.text.impl.CalculateBB
+import org.apache.pdfbox.util.Matrix
 
 /**
   * Created by schoudhury on 6/27/16.
@@ -32,9 +33,10 @@ case class PDCharStyle(font:PDFontInfo,
                        fillOpacity:String,
                        fillRule:String,
                        stroke:String,
-                       rotation:Float)
+                       rotation:Float
+                       )
 
-case class PDChar(content:String,bb:Rectangle, style:PDCharStyle) extends TextSegment
+case class PDChar(content:String,bb:Rectangle,glyphBB:Option[Rectangle],style:PDCharStyle) extends TextSegment
 
 case class PDWord(content:String,bb:Rectangle,chars:List[PDChar]) extends TextSegment
 

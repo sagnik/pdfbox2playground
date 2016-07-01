@@ -35,7 +35,7 @@ object ShowResults {
     val document = PDDocument.load(new File(pdLoc))
     val page = document.getPage(pageNum)
 
-    val paragraphs=new ProcessText().stripPage(pageNum,document)
+    val paragraphs=new ProcessText(page).stripPage(pageNum,document)
 
     val imFinder=new ProcessRaster(page)
     imFinder.getImages()
@@ -72,8 +72,6 @@ object ShowResults {
     printExtractionResult(pdLoc,pageNum,imFinder.rasterImages.map(_.bb),Color.MAGENTA,"rasters")
 
     printExtractionResult(pdLoc,pageNum,segments.map(_.bb),Color.ORANGE,"paths")
-
-
 
   }
 }
