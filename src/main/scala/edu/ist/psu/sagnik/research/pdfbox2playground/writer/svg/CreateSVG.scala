@@ -13,8 +13,9 @@ class CreateSVG[A] {
 
 
   def getSvgString[A](p:A,w:Float,h:Float):String=p match{
-    case p:PDPath => "<path "+PathHelper.getPathDString(p,h)+PathHelper.getStyleString(p.pathStyle)+"/>"
-    case p:PDChar => "<text "+TextHelper.getStyleString(p)+TextHelper.getLocationString(p,h)+ ">"+p.content+"</text>"
+    case p:PDPath => "<path "+PathHelper.getPathDString(p,h)+" "+PathHelper.getStyleString(p.pathStyle)+" />"
+    case p:PDChar => "<text "+TextHelper.getStyleString(p)+" "+TextHelper.getTransformString(p)+" "+TextHelper.getLocationString(p,h)+ ">"+
+      TextHelper.replaceSpecialChars(p.content)+"</text>"
   }
 
   def apply(sequence:List[A], svgLoc:String, width:Float, height:Float):Unit={
@@ -30,7 +31,7 @@ class CreateSVG[A] {
     case Some(first) => val content = first match {
       case first: PDPath => sequence.map(x => getSvgString(x, width, height)).foldLeft("")((a, b) => a + "\n" + b) + "\n"
       case first: PDChar => sequence.map(x => getSvgString(x, width, height)).foldLeft("")((a, b) => a + "\n" + b) + "\n"
-      case _ => ???
+      case _ => {println(s"${first.getClass}");???}
     }
       val svgEnd = "\n</svg>"
       File(svgLoc).writeAll(svgStart + content + svgEnd)

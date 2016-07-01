@@ -9,6 +9,9 @@ import edu.ist.psu.sagnik.research.pdfbox2playground.text.impl.ProcessText
 import edu.ist.psu.sagnik.research.pdfbox2playground.writer.pdf.CreateMarkedPDF
 import org.apache.pdfbox.pdmodel.PDDocument
 import java.awt.Color
+
+import edu.ist.psu.sagnik.research.pdfbox2playground.text.model.PDChar
+import edu.ist.psu.sagnik.research.pdfbox2playground.writer.svg.CreateSVG
 /**
  * Created by schoudhury on 6/27/16.
  */
@@ -45,12 +48,24 @@ object ShowResults {
       .flatMap(x=>x.segments)
 
     //TODO: check for comprehensions.
+    val chars=paragraphs.flatMap(_.tLines).flatMap(_.tWords).flatMap(_.chars)
+    val words=paragraphs.flatMap(_.tLines).flatMap(_.tWords)
+    val lines=paragraphs.flatMap(_.tLines)
 
-    printExtractionResult(pdLoc,pageNum,paragraphs.flatMap(_.tLines).flatMap(_.tWords).flatMap(_.chars).map(_.bb),Color.BLUE,"chars")
+    //create SVG here
+    new CreateSVG().apply(
+      chars,
+      pdLoc.substring(0,pdLoc.lastIndexOf("."))+"-page-chars-"+pageNum+".svg",
+      page.getBBox.getWidth,
+      page.getBBox.getHeight
+    )
+    println("created char SVG")
 
-    printExtractionResult(pdLoc,pageNum,paragraphs.flatMap(_.tLines).flatMap(_.tWords).map(_.bb),Color.GREEN,"words")
+    printExtractionResult(pdLoc,pageNum,chars.map(_.bb),Color.BLUE,"chars")
 
-    printExtractionResult(pdLoc,pageNum,paragraphs.flatMap(_.tLines).map(_.bb),Color.RED,"lines")
+    printExtractionResult(pdLoc,pageNum,words.map(_.bb),Color.GREEN,"words")
+
+    printExtractionResult(pdLoc,pageNum,lines.map(_.bb),Color.RED,"lines")
 
     printExtractionResult(pdLoc,pageNum,paragraphs.map(_.bb),Color.CYAN,"paragraphs")
 

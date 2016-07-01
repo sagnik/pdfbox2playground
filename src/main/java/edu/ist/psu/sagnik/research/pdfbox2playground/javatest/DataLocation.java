@@ -14,6 +14,7 @@ public class DataLocation {
         pdLoc="src/test/resources/test1-p08.pdf";
         pdLoc="/Users/schoudhury/Documents/Purchase_Order_Nitro_EMEA_USD_July_2015.pdf";
         pdLoc="/Users/schoudhury/Documents/cardholder_statement_of_dispute.pdf";
+        pdLoc="src/test/resources/LoremIpsum.pdf";
         pdPageNumber=0;
     }
 }

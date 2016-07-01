@@ -71,31 +71,13 @@ class ProcessText extends PDFTextStripper {
   }
 
   protected def wordFromTextPositions(tPs:List[TextPosition]):Option[PDWord]={
-    val chars=tPs.map(x=>PDChar(
-      content=x.getUnicode,
-      bb=TextPositionBB.approximate(x), // we can change it to other functions. See org.apache.pdfbox.examples.util.DrawPrintTextLocations
-      style=PDCharStyle(
-        font=PDFontInfo(
-        fontName= x.getFont.getFontDescriptor.getFontName,
-        fontSize = getGraphicsState.getTextState.getFontSize,
-        fontFamily = x.getFont.getFontDescriptor.getFontFamily,
-        isBold=x.getFont.getFontDescriptor.isForceBold, //TODO: text can be made look bold or italic by modifying the text or the text line matrix
-        isItalic=x.getFont.getFontDescriptor.isItalic,
-        fontWeight=x.getFont.getFontDescriptor.getFontWeight.toString
-      ),
-        fill = if (getGraphicsState.getTextState.getRenderingMode.isFill)
-          CreatePathStyle.getHexRGB(getGraphicsState.getNonStrokingColor)
-        else
-          "none",
-        fillRule = "nonzero", //an approximation here. TODO: see how this can be fixed
-        fillOpacity = "1", //a default value because I haven't read about the opacity model in PDF yet.
-        stroke = if (getGraphicsState.getTextState.getRenderingMode.isStroke)
-          CreatePathStyle.getHexRGB(getGraphicsState.getNonStrokingColor)
-        else
-          "none",
-        direction = x.getDir
+    val chars=tPs.map(x=>
+      PDChar(
+        content=x.getUnicode,
+        bb=TextPositionBB.approximate(x), // we can change it to other functions. See org.apache.pdfbox.examples.util.DrawPrintTextLocations
+        style=CreateTextStyle(x,getGraphicsState)
       )
-    ))
+    )
     if (!"".equals((chars.foldLeft("")((a,b)=>a+b.content)).trim))
       CalculateBB(chars) match {
         case Some(bb) => Some (
@@ -144,7 +126,13 @@ class ProcessText extends PDFTextStripper {
       case Some(w)=>currentWords :+ w
       case _ => currentWords
     })
-    tPss.last.foreach(x=>currentChars=currentChars :+ PDChar(x.getUnicode,TextPositionBB.approximate(x),x.getFont.getName,x.getFontSize))
+    tPss.last.foreach(x=>currentChars=currentChars :+
+      PDChar(
+        x.getUnicode,
+        TextPositionBB.approximate(x),
+        CreateTextStyle(x,getGraphicsState)
+      )
+    )
   }
 
   def stripPage(pdPageNum: Int, document: PDDocument): List[PDParagraph] = {

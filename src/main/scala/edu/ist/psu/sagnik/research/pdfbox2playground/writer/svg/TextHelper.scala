@@ -7,27 +7,49 @@ import edu.ist.psu.sagnik.research.pdfbox2playground.text.model.PDChar
   */
 object TextHelper {
 
-  def getStyleString(c:PDChar):String="font-variant:normal;font-weight:normal;font-size:" +
-    fontSize + "px;" +
+  def italicNormal(f:Boolean)=if (f) "italic" else "normal"
+
+  def getStyleString(c:PDChar):String="style=\""+
+    "font-variant:" +
+    "normal" + ";" +
+    "font-style:" +
+    italicNormal(c.style.font.isItalic) + ";" +
+    "font-weight:" +
+    c.style.font.fontWeight + ";" +
+    "font-size:" +
+    c.style.font.fontSize + "px;" +
     "font-family:" +
-    fontFamily + ";" +
+    c.style.font.fontFamily + ";" +
     "-inkscape-font-specification:" +
-    fontName + ";" +
+    c.style.font.fontName + ";" +
     "writing-mode:lr-tb;" +
     "fill:" +
-    fontFill + ";" +
+    c.style.fill + ";" +
     "fill-opacity:" +
-    fillOpacity + ";" +
+    c.style.fillOpacity + ";" +
     "fill-rule:" +
-    fillRule + ";" +
+    c.style.fillRule + ";" +
     "stroke:" +
-    stroke
+    c.style.stroke +
+    "\""
 
   def getLocationString(c:PDChar,h:Float):String="y=\"" +
-    (h-c.bb.y1) +
+    (c.bb.y2) +
     "\" x=\"" +
     c.bb.x1 +
     "\">"
 
+  def getTransformString(c:PDChar):String= "transform=\"rotate("+c.style.rotation.toString+")\""
+
+  def replaceSpecialChars(c:String)={
+    //see http://stackoverflow.com/questions/4237625/removing-invalid-xml-characters-from-a-string-in-java
+    val xml10pattern = "[^" + "\u0009\r\n" + "\u0020-\uD7FF" + "\uE000-\uFFFD" + "\ud800\udc00-\udbff\udfff" + "]"
+    c.replaceAll(xml10pattern, "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll("\'","&apos;")
+      .replaceAll("\"","&quot;")
+  }
 
 }

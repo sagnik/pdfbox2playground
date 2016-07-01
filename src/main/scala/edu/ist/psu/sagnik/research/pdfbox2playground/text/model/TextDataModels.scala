@@ -19,7 +19,7 @@ sealed trait TextSegment {
 case class PDFontInfo(fontName:String,
                       fontFamily:String,
                       fontSize:Float,
-                      fontWeight:String,
+                      fontWeight:Float,
                       isBold:Boolean,
                       isItalic:Boolean)
 // There is no easy way of knowing if a font is bold or Italic. But, some fonts do set a flag.
@@ -32,7 +32,7 @@ case class PDCharStyle(font:PDFontInfo,
                        fillOpacity:String,
                        fillRule:String,
                        stroke:String,
-                       direction:Float)
+                       rotation:Float)
 
 case class PDChar(content:String,bb:Rectangle, style:PDCharStyle) extends TextSegment
 

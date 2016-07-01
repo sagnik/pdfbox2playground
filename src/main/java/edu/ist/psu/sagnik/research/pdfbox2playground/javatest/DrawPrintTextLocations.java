@@ -38,14 +38,7 @@ import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
-import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
-import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
-import org.apache.pdfbox.pdmodel.font.PDType0Font;
-import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
-import org.apache.pdfbox.pdmodel.font.PDType3Font;
-import org.apache.pdfbox.pdmodel.font.PDVectorFont;
+import org.apache.pdfbox.pdmodel.font.*;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -189,7 +182,6 @@ public class DrawPrintTextLocations extends PDFTextStripper
         String imageFilename = filename;
         int pt = imageFilename.lastIndexOf('.');
         imageFilename = imageFilename.substring(0, pt) + "-marked-" + (page + 1) + "-3.png";
-        System.out.println(imageFilename);
         ImageIO.write(image, "png", new File(imageFilename));
     }
 
@@ -339,13 +331,24 @@ public class DrawPrintTextLocations extends PDFTextStripper
             if (" ".equals(text.getUnicode()))
                 this.writeWordSeparator();
 
+
             System.out.println("String[" + text.getXDirAdj() + ","
-                    + text.getYDirAdj() + " fs=" + text.getFontSize() + " xscale="
+                    + text.getYDirAdj() + " fs=" + text.getFontSizeInPt() + " xscale="
                     + text.getXScale() + " height=" + text.getHeightDir() + " space="
                     + text.getWidthOfSpace() + " width="
                     + text.getWidthDirAdj() + " rotation: "
                     + text.getDir()
                     +"]" + text.getUnicode());
+
+
+            //TODO: find out why fontsize here returns 0
+            PDFontDescriptor tfd=text.getFont().getFontDescriptor();
+            System.out.println("[font-family]: " + tfd.getFontFamily() + "," +
+                    "[font-weight]: " + tfd.getFontWeight() + "," +
+                    "[font-size]: " + getGraphicsState().getTextState().getFontSize() + "," +
+                    "[font-instance-of]: "+(text.getFont() instanceof PDSimpleFont)
+            );
+
 
 
 
@@ -379,7 +382,6 @@ public class DrawPrintTextLocations extends PDFTextStripper
 
             s = flipAT.createTransformedShape(s);
             s = rotateAT.createTransformedShape(s);
-            System.out.println(s.getBounds2D());
             g2d.setColor(Color.blue);
             //g2d.draw(s);
         }
