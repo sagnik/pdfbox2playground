@@ -10,6 +10,8 @@ import org.apache.pdfbox.util.Matrix
   */
 
 /*
+From PDF Spec 1.7, Page 225
+---------------------------
 A path is composed of straight and curved line segments, which may connect to
 one another or may be disconnected. A pair of segments are said to connect only
 if they are defined consecutively, with the second segment starting where the first
@@ -38,7 +40,7 @@ case class PDCurve(startPoint:Point2D.Float,endPoint:Point2D.Float, controlPoint
 Point2D.Float, controlPoint2: Point2D.Float,bb:Rectangle) extends PDSegment
 
 //case class PDRect(segments:List[PDLine]) extends PDSubPath
-case class PDShape(segments:List[PDSegment])
+case class PDShape(segments:List[PDSegment],fromReCommand:Boolean)
 
 case class PDPath(subPaths:List[PDShape],isClip:Boolean,doPaint:Boolean, windingRule:Int,pathStyle:PathStyle)
 

@@ -13,7 +13,7 @@ import org.apache.pdfbox.pdmodel.{PDDocument, PDPage}
   */
 object ProcessDocument {
 
-  def apply(page:PDPage,document:PDDocument,pNum:Int):PDPageSimple={
+  def fromPage(page:PDPage,document:PDDocument,pNum:Int):PDPageSimple={
     val paragraphs=new ProcessText(page).stripPage(pNum,document)
 
     val imFinder=new ProcessRaster(page)
@@ -38,16 +38,18 @@ object ProcessDocument {
     )
   }
 
-  def apply(pdLoc:String,pNum:Int):PDPageSimple={
+  def fromPDLocByPage(pdLoc:String,pNum:Int):PDPageSimple={
     val document = PDDocument.load(new File(pdLoc))
     val page = document.getPage(pNum)
-    apply(page,document,pNum)
+    fromPage(page,document,pNum)
   }
 
 
-  def apply(pdLoc:String):List[PDPageSimple]={
+  def fromPDLoc(pdLoc:String):List[PDPageSimple]={
     val document = PDDocument.load(new File(pdLoc))
-    (0 to document.getNumberOfPages).toList.map(x=>apply(pdLoc,x))
+    (0 to document.getNumberOfPages).toList.map(x=>fromPDLocByPage(pdLoc,x))
   }
+
+  def apply(pdLoc:String):PDDocumentSimple=PDDocumentSimple(fromPDLoc(pdLoc))
 
 }

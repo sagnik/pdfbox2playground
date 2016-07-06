@@ -46,7 +46,8 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
           PDLine(fp(p1), fp(p2),BB.Line(fp(p1), fp(p2))),
           PDLine(fp(p2), fp(p3),BB.Line(fp(p2), fp(p3))),
           PDLine(fp(p3), fp(p0),BB.Line(fp(p3), fp(p0)))
-        )
+        ),
+        fromReCommand = true
       )
     )
     (currentPath, currentSubPath) match{
@@ -109,7 +110,8 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
         PDShape(
           segments = List(
             PDLine(currentPoint,new Point2D.Float(x,y),BB.Line(currentPoint,new Point2D.Float(x,y)))
-          )
+          ),
+          fromReCommand = false
         )
       )
     }
@@ -141,7 +143,8 @@ class ProcessPaths(page:PDPage) extends PDFGraphicsStreamEngine(page:PDPage) {
               controlPoint2 = new Point2D.Float(x2,y2),
               BB.Curve(currentPoint,new Point2D.Float(x3,y3),new Point2D.Float(x1,y1),new Point2D.Float(x2,y2))
             )
-          )
+          ),
+          fromReCommand = false
         )
       )
     }
