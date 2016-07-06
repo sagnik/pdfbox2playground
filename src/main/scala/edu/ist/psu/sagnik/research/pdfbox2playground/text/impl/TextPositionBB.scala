@@ -15,7 +15,7 @@ import org.apache.pdfbox.text.TextPosition
 object TextPositionBB {
 
   def approximate(tP:TextPosition)=Rectangle(
-    tP.getXDirAdj,
+    tP.getXDirAdj, // text can be rotated, which will change the x,y coordinates and bounding boxes
     tP.getYDirAdj - tP.getHeightDir,
     tP.getXDirAdj+tP.getWidthDirAdj,
     tP.getYDirAdj//(tP.getYDirAdj - tP.getHeightDir)+tP.getHeightDir
